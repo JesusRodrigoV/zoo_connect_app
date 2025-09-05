@@ -1,3 +1,4 @@
+import 'package:zoo_connect_app/screens/home/home.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -7,14 +8,14 @@ void main() {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  @override
+  @override 
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MaterialApp(
+      title: 'ZooConnect',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
       ),
+      home: Home(),
     );
   }
 }
