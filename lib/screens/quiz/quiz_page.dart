@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zoo_connect_app/providers/quiz/quiz_config_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:zoo_connect_app/providers/quiz/quiz_state_provider.dart';
-import 'package:zoo_connect_app/shared/quiz/quiz_question.dart';
-import 'package:zoo_connect_app/shared/widgets/custom_loader.dart';
+import 'package:zoo_connect_app/widgets/quiz/quiz_question.dart';
+import 'package:zoo_connect_app/widgets/shared/custom_loader.dart';
 
 class QuizPage extends ConsumerStatefulWidget {
   const QuizPage({super.key});
