@@ -4,7 +4,10 @@ part 'quiz.freezed.dart';
 part 'quiz.g.dart';
 
 @freezed
-class Quiz with _$Quiz {
+abstract class Quiz with _$Quiz {
+
+  const Quiz._();
+
   const factory Quiz({
     required String type,
     required String difficulty,

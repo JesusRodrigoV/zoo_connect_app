@@ -11,11 +11,10 @@ _Quiz _$QuizFromJson(Map<String, dynamic> json) => _Quiz(
   difficulty: json['difficulty'] as String,
   category: json['category'] as String,
   question: json['question'] as String,
-  correctAnswer: json['correctAnswer'] as String,
-  incorrectAnswers:
-      (json['incorrectAnswers'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
+  correctAnswer: json['correct_answer'] as String,
+  incorrectAnswers: (json['incorrect_answers'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
 );
 
 Map<String, dynamic> _$QuizToJson(_Quiz instance) => <String, dynamic>{
@@ -23,6 +22,6 @@ Map<String, dynamic> _$QuizToJson(_Quiz instance) => <String, dynamic>{
   'difficulty': instance.difficulty,
   'category': instance.category,
   'question': instance.question,
-  'correctAnswer': instance.correctAnswer,
-  'incorrectAnswers': instance.incorrectAnswers,
+  'correct_answer': instance.correctAnswer,
+  'incorrect_answers': instance.incorrectAnswers,
 };

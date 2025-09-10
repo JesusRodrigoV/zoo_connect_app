@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Quiz {
 
- String get type; String get difficulty; String get category; String get question; String get correctAnswer; List<String> get incorrectAnswers;
+ String get type; String get difficulty; String get category; String get question;@JsonKey(name: 'correct_answer') String get correctAnswer;@JsonKey(name: 'incorrect_answers') List<String> get incorrectAnswers;
 /// Create a copy of Quiz
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $QuizCopyWith<$Res>  {
   factory $QuizCopyWith(Quiz value, $Res Function(Quiz) _then) = _$QuizCopyWithImpl;
 @useResult
 $Res call({
- String type, String difficulty, String category, String question, String correctAnswer, List<String> incorrectAnswers
+ String type, String difficulty, String category, String question,@JsonKey(name: 'correct_answer') String correctAnswer,@JsonKey(name: 'incorrect_answers') List<String> incorrectAnswers
 });
 
 
@@ -158,7 +158,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  String difficulty,  String category,  String question,  String correctAnswer,  List<String> incorrectAnswers)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  String difficulty,  String category,  String question, @JsonKey(name: 'correct_answer')  String correctAnswer, @JsonKey(name: 'incorrect_answers')  List<String> incorrectAnswers)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Quiz() when $default != null:
 return $default(_that.type,_that.difficulty,_that.category,_that.question,_that.correctAnswer,_that.incorrectAnswers);case _:
@@ -179,7 +179,7 @@ return $default(_that.type,_that.difficulty,_that.category,_that.question,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  String difficulty,  String category,  String question,  String correctAnswer,  List<String> incorrectAnswers)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  String difficulty,  String category,  String question, @JsonKey(name: 'correct_answer')  String correctAnswer, @JsonKey(name: 'incorrect_answers')  List<String> incorrectAnswers)  $default,) {final _that = this;
 switch (_that) {
 case _Quiz():
 return $default(_that.type,_that.difficulty,_that.category,_that.question,_that.correctAnswer,_that.incorrectAnswers);case _:
@@ -199,7 +199,7 @@ return $default(_that.type,_that.difficulty,_that.category,_that.question,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  String difficulty,  String category,  String question,  String correctAnswer,  List<String> incorrectAnswers)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  String difficulty,  String category,  String question, @JsonKey(name: 'correct_answer')  String correctAnswer, @JsonKey(name: 'incorrect_answers')  List<String> incorrectAnswers)?  $default,) {final _that = this;
 switch (_that) {
 case _Quiz() when $default != null:
 return $default(_that.type,_that.difficulty,_that.category,_that.question,_that.correctAnswer,_that.incorrectAnswers);case _:
@@ -213,17 +213,17 @@ return $default(_that.type,_that.difficulty,_that.category,_that.question,_that.
 /// @nodoc
 @JsonSerializable()
 
-class _Quiz implements Quiz {
-  const _Quiz({required this.type, required this.difficulty, required this.category, required this.question, required this.correctAnswer, required final  List<String> incorrectAnswers}): _incorrectAnswers = incorrectAnswers;
+class _Quiz extends Quiz {
+  const _Quiz({required this.type, required this.difficulty, required this.category, required this.question, @JsonKey(name: 'correct_answer') required this.correctAnswer, @JsonKey(name: 'incorrect_answers') required final  List<String> incorrectAnswers}): _incorrectAnswers = incorrectAnswers,super._();
   factory _Quiz.fromJson(Map<String, dynamic> json) => _$QuizFromJson(json);
 
 @override final  String type;
 @override final  String difficulty;
 @override final  String category;
 @override final  String question;
-@override final  String correctAnswer;
+@override@JsonKey(name: 'correct_answer') final  String correctAnswer;
  final  List<String> _incorrectAnswers;
-@override List<String> get incorrectAnswers {
+@override@JsonKey(name: 'incorrect_answers') List<String> get incorrectAnswers {
   if (_incorrectAnswers is EqualUnmodifiableListView) return _incorrectAnswers;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_incorrectAnswers);
@@ -263,7 +263,7 @@ abstract mixin class _$QuizCopyWith<$Res> implements $QuizCopyWith<$Res> {
   factory _$QuizCopyWith(_Quiz value, $Res Function(_Quiz) _then) = __$QuizCopyWithImpl;
 @override @useResult
 $Res call({
- String type, String difficulty, String category, String question, String correctAnswer, List<String> incorrectAnswers
+ String type, String difficulty, String category, String question,@JsonKey(name: 'correct_answer') String correctAnswer,@JsonKey(name: 'incorrect_answers') List<String> incorrectAnswers
 });
 
 
