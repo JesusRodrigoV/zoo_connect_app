@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zoo_connect_app/screens/quiz/quiz_bienvenida.dart';
+import 'package:zoo_connect_app/screens/settings/settings.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -19,8 +20,8 @@ class _HomeState extends State<Home> {
     return QuizBienvenida();
   }
 
-  Widget algoMasPage() {
-    return Center(child: Text("Tercera Pagina"));
+  Widget settingsPage() {
+    return SettingsPage();
   }
 
   NavigationBar navigationBar() {
@@ -44,7 +45,10 @@ class _HomeState extends State<Home> {
           icon: Icon(Icons.quiz),
           label: 'Quiz',
         ),
-        NavigationDestination(icon: Icon(Icons.person), label: 'Algo Mas'),
+        NavigationDestination(
+          selectedIcon: Icon(Icons.settings_outlined), 
+          icon: Icon(Icons.settings), 
+          label: 'Ajustes'),
       ],
     );
   }
@@ -52,7 +56,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: <Widget>[homePage(), quizPage(), algoMasPage()][currentPageIndex],
+      body: <Widget>[homePage(), quizPage(), settingsPage()][currentPageIndex],
       bottomNavigationBar: navigationBar(),
     );
   }
