@@ -77,17 +77,16 @@ class AnswerButton extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Número de opción
                 Container(
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(51), // 0.2 * 255
+                    color: Colors.white.withAlpha(51),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
                     child: Text(
-                      String.fromCharCode(65 + index), // A, B, C, D
+                      String.fromCharCode(65 + index),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,

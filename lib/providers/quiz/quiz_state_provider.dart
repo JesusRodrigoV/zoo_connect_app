@@ -25,10 +25,10 @@ class QuizStateNotifier extends StateNotifier<QuizState> {
   void answerQuestion(int index, String selectedAnswer) {
     if (state.userAnswers.containsKey(index)) return;
 
-    final quizQuestions = ref.read(quizQuestionsProvider).value;
-    if (quizQuestions == null || index >= quizQuestions.length) return;
+    final quizQuestions = ref.read(quizQuestionsProvider);
+    if (index >= quizQuestions.questions.length) return;
 
-    final correctAnswer = quizQuestions[index].correctAnswer;
+    final correctAnswer = quizQuestions.questions[index].correctAnswer;
     
     final newUserAnswers = Map<int, String>.from(state.userAnswers);
     newUserAnswers[index] = selectedAnswer;

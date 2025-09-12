@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zoo_connect_app/providers/quiz/quiz_config_provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:zoo_connect_app/providers/quiz/quiz_state_provider.dart';
 import 'package:zoo_connect_app/widgets/quiz/quiz_question.dart';
 import 'package:zoo_connect_app/widgets/shared/custom_loader.dart';
@@ -17,11 +16,21 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(quizQuestionsProvider.notifier).fetchQuestions();
+    });
+  }
+
   void _onAnswerSelected(String selectedAnswer) {
-    ref.read(quizStateProvider.notifier).answerQuestion(_currentIndex, selectedAnswer);
+    ref
+        .read(quizStateProvider.notifier)
+        .answerQuestion(_currentIndex, selectedAnswer);
 
     Future.delayed(const Duration(milliseconds: 1500), () {
-      final questions = ref.read(quizQuestionsProvider).value!;
+      final questions = ref.read(quizQuestionsProvider).questions;
       if (_currentIndex < questions.length - 1) {
         _pageController.nextPage(
           duration: const Duration(milliseconds: 500),
@@ -41,7 +50,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   void _showQuizCompletedDialog() {
     final quizState = ref.read(quizStateProvider);
-    final totalQuestions = ref.read(quizQuestionsProvider).value!.length;
+    final totalQuestions = ref.read(quizQuestionsProvider).questions.length;
 
     showDialog(
       context: context,
@@ -64,7 +73,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    final quizQuestions = ref.watch(quizQuestionsProvider);
+    final quizQuestionsState = ref.watch(quizQuestionsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -74,49 +83,42 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
               child: Text(
-                '${_currentIndex + 1} / ${quizQuestions.value?.length ?? 0}',
+                '${_currentIndex + 1}/${quizQuestionsState.questions.length}',
                 style: const TextStyle(fontSize: 18),
               ),
             ),
-          )
+          ),
         ],
       ),
-      body: quizQuestions.when(
-        data: (questions) {
-          if (questions.isEmpty) {
-            return const Center(child: Text('No se encontraron preguntas.'));
-          }
-
-          return PageView.builder(
-            controller: _pageController,
-            itemCount: questions.length,
-            onPageChanged: _onPageChanged,
-            itemBuilder: (context, index) {
-              final question = questions[index];
-              return QuizQuestionCard(
-                question: question,
-                index: index,
-                onAnswered: _onAnswerSelected,
-              );
-            },
-          );
-        },
-        loading: () => customLoader(),
-        error: (error, stack) => _buildErrorWidget(error, ref),
-      ),
+      body: _buildBody(quizQuestionsState),
     );
   }
 
-  Widget _buildErrorWidget(Object error, WidgetRef ref) {
-    String errorMessage = 'Ocurrió un error inesperado.';
-    if (error is http.ClientException) {
-      errorMessage = 'Error de conexión. Por favor, verifica tu internet.';
-    } else if (error.toString().contains('Fallo al cargar las preguntas')) {
-      errorMessage = 'No se pudieron cargar las preguntas. Inténtalo de nuevo.';
-    } else if (error.toString().contains('Error en la API: Código')) {
-      errorMessage = 'No hay suficientes preguntas para la configuración seleccionada. Por favor, intenta con otra configuración.';
+  Widget _buildBody(QuizQuestionsState state) {
+    if (state.isLoading) {
+      return customLoader();
+    } else if (state.error != null) {
+      return _buildErrorWidget(state.error!, ref);
+    } else if (state.questions.isEmpty) {
+      return const Center(child: Text('No se encontraron preguntas.'));
+    } else {
+      return PageView.builder(
+        controller: _pageController,
+        itemCount: state.questions.length,
+        onPageChanged: _onPageChanged,
+        itemBuilder: (context, index) {
+          final question = state.questions[index];
+          return QuizQuestionCard(
+            question: question,
+            index: index,
+            onAnswered: _onAnswerSelected,
+          );
+        },
+      );
     }
+  }
 
+  Widget _buildErrorWidget(String errorMessage, WidgetRef ref) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -133,7 +135,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                ref.invalidate(quizQuestionsProvider);
+                ref.read(quizQuestionsProvider.notifier).fetchQuestions();
               },
               child: const Text('Reintentar'),
             ),

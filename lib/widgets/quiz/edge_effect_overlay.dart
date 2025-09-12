@@ -59,7 +59,6 @@ class _EdgeBorder extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
-                // Sombra exterior intensa
                 BoxShadow(
                   color: controller.edgeColor.withAlpha(
                     (controller.edgeLightAnimation.value * 0.6 * 255).round(),
@@ -67,7 +66,6 @@ class _EdgeBorder extends StatelessWidget {
                   blurRadius: 20.0,
                   spreadRadius: 8.0,
                 ),
-                // Sombra exterior suave
                 BoxShadow(
                   color: controller.edgeColor.withAlpha(
                     (controller.edgeLightAnimation.value * 0.3 * 255).round(),
