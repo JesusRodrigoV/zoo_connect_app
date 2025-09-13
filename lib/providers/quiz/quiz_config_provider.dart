@@ -19,7 +19,6 @@ class QuizConfig {
   }
 }
 
-// 2. StateNotifier para manejar la configuración del quiz
 class QuizConfigNotifier extends StateNotifier<QuizConfig> {
   QuizConfigNotifier() : super(QuizConfig(amount: 10, difficulty: 'easy'));
 
@@ -43,7 +42,6 @@ final quizConfigProvider = StateNotifierProvider<QuizConfigNotifier, QuizConfig>
   return QuizConfigNotifier();
 });
 
-// Proveedor para obtener el token de sesión
 final sessionTokenProvider = FutureProvider.autoDispose<String?>((ref) async {
   final tokenUrl = 'https://opentdb.com/api_token.php?command=request';
   try {
@@ -60,32 +58,99 @@ final sessionTokenProvider = FutureProvider.autoDispose<String?>((ref) async {
   return null;
 });
 
-// 3. Proveedor para las preguntas de la API
-final quizQuestionsProvider = FutureProvider.autoDispose<List<Quiz>>((ref) async {
-  final config = ref.watch(quizConfigProvider);
-  final sessionToken = await ref.watch(sessionTokenProvider.future);
-  String apiUrl = 'https://opentdb.com/api.php?amount=${config.amount}&category=27&difficulty=${config.difficulty}';
+class QuizQuestionsState {
+  final List<Quiz> questions;
+  final bool isLoading;
+  final String? error;
 
-  if (sessionToken != null) {
-    apiUrl += '&token=$sessionToken';
+  QuizQuestionsState({
+    this.questions = const [],
+    this.isLoading = false,
+    this.error,
+  });
+
+  QuizQuestionsState copyWith({
+    List<Quiz>? questions,
+    bool? isLoading,
+    String? error,
+  }) {
+    return QuizQuestionsState(
+      questions: questions ?? this.questions,
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
+    );
   }
+}
 
-  try {
-    final response = await http.get(Uri.parse(apiUrl));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final int responseCode = data['response_code'];
+class QuizQuestionsNotifier extends StateNotifier<QuizQuestionsState> {
+  final Ref ref;
 
-      if (responseCode == 0) {
-        final List results = data['results'];
-        return results.map((json) => Quiz.fromJson(json)).toList();
-      } else {
-        throw Exception('Error en la API: Código $responseCode');
-      }
-    } else {
-      throw Exception('Fallo al cargar las preguntas. Código: ${response.statusCode}');
+  QuizQuestionsNotifier(this.ref) : super(QuizQuestionsState());
+
+  Future<void> fetchQuestions() async {
+    if (state.isLoading) return;
+
+    state = state.copyWith(isLoading: true, error: null);
+
+    final config = ref.read(quizConfigProvider);
+    final sessionToken = await ref.read(sessionTokenProvider.future);
+
+    String apiUrl =
+        'https://opentdb.com/api.php?amount=${config.amount}&category=27&difficulty=${config.difficulty}';
+
+    if (sessionToken != null) {
+      apiUrl += '&token=$sessionToken';
     }
-  } catch (e) {
-    throw Exception('Error de conexión: $e');
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final int responseCode = data['response_code'];
+
+        if (responseCode == 0) {
+          final List results = data['results'];
+          final fetchedQuestions = results.map((json) => Quiz.fromJson(json)).toList();
+          state = state.copyWith(questions: fetchedQuestions, isLoading: false);
+        } else {
+          String errorMessage;
+          if (responseCode == 1) {
+            errorMessage = 'No hay suficientes preguntas para la configuración seleccionada. Intenta con otra configuración.';
+          } else if (responseCode == 2) {
+            errorMessage = 'Parámetros inválidos en la API.';
+          } else if (responseCode == 3 || responseCode == 4) {
+            errorMessage = 'El token de sesión ha expirado o no es válido. Reinicia la aplicación para obtener uno nuevo.';
+          } else {
+            errorMessage = 'Error en la API: Código $responseCode';
+          }
+          state = state.copyWith(error: errorMessage, isLoading: false);
+        }
+      } else {
+        state = state.copyWith(
+          error: 'Fallo al cargar las preguntas. Código: ${response.statusCode}',
+          isLoading: false,
+        );
+      }
+    } on http.ClientException {
+      state = state.copyWith(
+        error: 'Error de conexión. Por favor, verifica tu internet.',
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        error: 'Ocurrió un error inesperado al cargar las preguntas.',
+        isLoading: false,
+      );
+    }
   }
+}
+
+final quizQuestionsProvider =
+    StateNotifierProvider<QuizQuestionsNotifier, QuizQuestionsState>((ref) {
+  final notifier = QuizQuestionsNotifier(ref);
+  ref.listen(quizConfigProvider, (prev, next) {
+    notifier.fetchQuestions();
+  });
+  return notifier;
 });
