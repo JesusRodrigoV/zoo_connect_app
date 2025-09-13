@@ -46,9 +46,9 @@ class _HomeState extends State<Home> {
           label: 'Quiz',
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.settings_outlined), 
-          icon: Icon(Icons.settings), 
-          label: 'Ajustes'),
+          selectedIcon: Icon(Icons.person_2), 
+          icon: Icon(Icons.person_2_outlined), 
+          label: 'Perfil'),
       ],
     );
   }
