@@ -16,8 +16,8 @@ class MainApp extends ConsumerWidget {
 
     return MaterialApp(
       title: 'ZooConnect',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeMode,
       home: Home(),
       debugShowCheckedModeBanner: false,
