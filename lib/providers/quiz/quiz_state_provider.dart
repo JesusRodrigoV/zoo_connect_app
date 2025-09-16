@@ -1,14 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zoo_connect_app/providers/quiz/quiz_config_provider.dart';
+import 'package:zoo_connect_app/providers/quiz/quiz_question_provider.dart';
 
 class QuizState {
   final Map<int, String> userAnswers;
   final int score;
 
-  QuizState({
-    required this.userAnswers,
-    this.score = 0,
-  });
+  QuizState({required this.userAnswers, this.score = 0});
 
   QuizState copyWith({Map<int, String>? userAnswers, int? score}) {
     return QuizState(
@@ -29,12 +26,12 @@ class QuizStateNotifier extends StateNotifier<QuizState> {
     if (index >= quizQuestions.questions.length) return;
 
     final correctAnswer = quizQuestions.questions[index].correctAnswer;
-    
+
     final newUserAnswers = Map<int, String>.from(state.userAnswers);
     newUserAnswers[index] = selectedAnswer;
 
     final newScore = state.score + (selectedAnswer == correctAnswer ? 1 : 0);
-    
+
     state = state.copyWith(userAnswers: newUserAnswers, score: newScore);
   }
 
@@ -43,6 +40,8 @@ class QuizStateNotifier extends StateNotifier<QuizState> {
   }
 }
 
-final quizStateProvider = StateNotifierProvider<QuizStateNotifier, QuizState>((ref) {
+final quizStateProvider = StateNotifierProvider<QuizStateNotifier, QuizState>((
+  ref,
+) {
   return QuizStateNotifier(ref);
 });
