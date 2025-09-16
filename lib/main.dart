@@ -1,4 +1,4 @@
-import 'package:zoo_connect_app/screens/home/home.dart';
+import 'package:zoo_connect_app/screens/home.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
