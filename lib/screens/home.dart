@@ -14,7 +14,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int currentPageIndex = 0;
 
-  Widget homePage() {
+  Widget inicioPage() {
     return HomePage();
   }
 
@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: SafeArea(
         child: <Widget>[
-          homePage(),
+          inicioPage(),
           segundaPagina(),
           terceraPagina(),
         ][currentPageIndex],
