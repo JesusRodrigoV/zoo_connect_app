@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zoo_connect_app/screens/home/home_page.dart';
 import 'package:zoo_connect_app/screens/quiz/quiz_bienvenida.dart';
 
 class Home extends StatefulWidget {
@@ -12,7 +13,7 @@ class _HomeState extends State<Home> {
   int currentPageIndex = 0;
 
   Widget homePage() {
-    return Center(child: Text("Primera Pagina"));
+    return HomePage();
   }
 
   Widget quizPage() {
