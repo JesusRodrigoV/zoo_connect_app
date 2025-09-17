@@ -4,7 +4,7 @@ import 'package:zoo_connect_app/screens/auth/login.dart';
 import 'package:zoo_connect_app/screens/auth/signup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:zoo_connect_app/screens/home/home_page.dart';
+import 'package:zoo_connect_app/screens/home.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
@@ -23,7 +23,7 @@ class MainApp extends ConsumerWidget {
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeMode,
-      home: HomePage(),
+      home: Home(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/login': (context) => const LoginScreen(),
