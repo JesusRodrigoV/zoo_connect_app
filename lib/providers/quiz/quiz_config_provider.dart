@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:zoo_connect_app/models/quiz/quiz.dart';
-
+import 'package:zoo_connect_app/providers/quiz/quiz_providers.dart';
 
 class QuizConfig {
   final int amount;
@@ -32,31 +32,16 @@ class QuizConfigNotifier extends StateNotifier<QuizConfig> {
 
   void setRandomConfig() {
     final random = Random();
-    final randomAmount = (random.nextInt(3) + 1) * 5; 
+    final randomAmount = (random.nextInt(3) + 1) * 5;
     final randomDifficulty = ['easy', 'medium', 'hard'][random.nextInt(3)];
     state = state.copyWith(amount: randomAmount, difficulty: randomDifficulty);
   }
 }
 
-final quizConfigProvider = StateNotifierProvider<QuizConfigNotifier, QuizConfig>((ref) {
-  return QuizConfigNotifier();
-});
-
-final sessionTokenProvider = FutureProvider.autoDispose<String?>((ref) async {
-  final tokenUrl = 'https://opentdb.com/api_token.php?command=request';
-  try {
-    final response = await http.get(Uri.parse(tokenUrl));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['response_code'] == 0) {
-        return data['token'];
-      }
-    }
-  } catch (e) {
-    print('Error al obtener el token de sesión: $e');
-  }
-  return null;
-});
+final quizConfigProvider =
+    StateNotifierProvider<QuizConfigNotifier, QuizConfig>((ref) {
+      return QuizConfigNotifier();
+    });
 
 class QuizQuestionsState {
   final List<Quiz> questions;
@@ -111,16 +96,20 @@ class QuizQuestionsNotifier extends StateNotifier<QuizQuestionsState> {
 
         if (responseCode == 0) {
           final List results = data['results'];
-          final fetchedQuestions = results.map((json) => Quiz.fromJson(json)).toList();
+          final fetchedQuestions = results
+              .map((json) => Quiz.fromJson(json))
+              .toList();
           state = state.copyWith(questions: fetchedQuestions, isLoading: false);
         } else {
           String errorMessage;
           if (responseCode == 1) {
-            errorMessage = 'No hay suficientes preguntas para la configuración seleccionada. Intenta con otra configuración.';
+            errorMessage =
+                'No hay suficientes preguntas para la configuración seleccionada. Intenta con otra configuración.';
           } else if (responseCode == 2) {
             errorMessage = 'Parámetros inválidos en la API.';
           } else if (responseCode == 3 || responseCode == 4) {
-            errorMessage = 'El token de sesión ha expirado o no es válido. Reinicia la aplicación para obtener uno nuevo.';
+            errorMessage =
+                'El token de sesión ha expirado o no es válido. Reinicia la aplicación para obtener uno nuevo.';
           } else {
             errorMessage = 'Error en la API: Código $responseCode';
           }
@@ -128,7 +117,8 @@ class QuizQuestionsNotifier extends StateNotifier<QuizQuestionsState> {
         }
       } else {
         state = state.copyWith(
-          error: 'Fallo al cargar las preguntas. Código: ${response.statusCode}',
+          error:
+              'Fallo al cargar las preguntas. Código: ${response.statusCode}',
           isLoading: false,
         );
       }
@@ -145,12 +135,3 @@ class QuizQuestionsNotifier extends StateNotifier<QuizQuestionsState> {
     }
   }
 }
-
-final quizQuestionsProvider =
-    StateNotifierProvider<QuizQuestionsNotifier, QuizQuestionsState>((ref) {
-  final notifier = QuizQuestionsNotifier(ref);
-  ref.listen(quizConfigProvider, (prev, next) {
-    notifier.fetchQuestions();
-  });
-  return notifier;
-});
