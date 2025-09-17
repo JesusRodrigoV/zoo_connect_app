@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zoo_connect_app/screens/home/home_page.dart';
 import 'package:zoo_connect_app/screens/quiz/quiz_bienvenida.dart';
 import 'package:zoo_connect_app/screens/perfil/perfil.dart';
 import 'package:zoo_connect_app/widgets/shared/navigation_bar.dart';
@@ -14,7 +15,7 @@ class _HomeState extends State<Home> {
   int currentPageIndex = 0;
 
   Widget homePage() {
-    return Center(child: Text("Primera Pagina"));
+    return HomePage();
   }
 
   Widget segundaPagina() {

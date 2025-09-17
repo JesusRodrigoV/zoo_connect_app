@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zoo_connect_app/providers/quiz/quiz_config_provider.dart';
+import 'package:zoo_connect_app/providers/quiz/ai_questions_provider.dart';
 import 'package:zoo_connect_app/providers/quiz/quiz_state_provider.dart';
 import 'package:zoo_connect_app/widgets/quiz/quiz_question.dart';
 import 'package:zoo_connect_app/widgets/shared/custom_loader.dart';
@@ -20,7 +20,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(quizQuestionsProvider.notifier).fetchQuestions();
+      ref.read(aiQuizQuestionsProvider.notifier).fetchQuestions();
     });
   }
 
@@ -30,7 +30,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         .answerQuestion(_currentIndex, selectedAnswer);
 
     Future.delayed(const Duration(milliseconds: 1500), () {
-      final questions = ref.read(quizQuestionsProvider).questions;
+      final questions = ref.read(aiQuizQuestionsProvider).questions;
       if (_currentIndex < questions.length - 1) {
         _pageController.nextPage(
           duration: const Duration(milliseconds: 500),
@@ -50,7 +50,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   void _showQuizCompletedDialog() {
     final quizState = ref.read(quizStateProvider);
-    final totalQuestions = ref.read(quizQuestionsProvider).questions.length;
+    final totalQuestions = ref.read(aiQuizQuestionsProvider).questions.length;
 
     showDialog(
       context: context,
@@ -73,7 +73,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    final quizQuestionsState = ref.watch(quizQuestionsProvider);
+    final quizQuestionsState = ref.watch(aiQuizQuestionsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -135,7 +135,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                ref.read(quizQuestionsProvider.notifier).fetchQuestions();
+                ref.read(aiQuizQuestionsProvider.notifier).fetchQuestions();
               },
               child: const Text('Reintentar'),
             ),
