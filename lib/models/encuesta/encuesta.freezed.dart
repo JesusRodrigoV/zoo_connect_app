@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Encuesta {
 
- String get id; String get titulo; String get descripcion;@JsonKey(name: 'fecha_creacion') DateTime get fechaCreacion; List<String> get preguntas;
+ String get id; String get titulo; String get descripcion; List<Question> get preguntas; bool get publicada; DateTime get fechaCreacion;
 /// Create a copy of Encuesta
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $EncuestaCopyWith<Encuesta> get copyWith => _$EncuestaCopyWithImpl<Encuesta>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Encuesta&&(identical(other.id, id) || other.id == id)&&(identical(other.titulo, titulo) || other.titulo == titulo)&&(identical(other.descripcion, descripcion) || other.descripcion == descripcion)&&(identical(other.fechaCreacion, fechaCreacion) || other.fechaCreacion == fechaCreacion)&&const DeepCollectionEquality().equals(other.preguntas, preguntas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Encuesta&&(identical(other.id, id) || other.id == id)&&(identical(other.titulo, titulo) || other.titulo == titulo)&&(identical(other.descripcion, descripcion) || other.descripcion == descripcion)&&const DeepCollectionEquality().equals(other.preguntas, preguntas)&&(identical(other.publicada, publicada) || other.publicada == publicada)&&(identical(other.fechaCreacion, fechaCreacion) || other.fechaCreacion == fechaCreacion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titulo,descripcion,fechaCreacion,const DeepCollectionEquality().hash(preguntas));
+int get hashCode => Object.hash(runtimeType,id,titulo,descripcion,const DeepCollectionEquality().hash(preguntas),publicada,fechaCreacion);
 
 @override
 String toString() {
-  return 'Encuesta(id: $id, titulo: $titulo, descripcion: $descripcion, fechaCreacion: $fechaCreacion, preguntas: $preguntas)';
+  return 'Encuesta(id: $id, titulo: $titulo, descripcion: $descripcion, preguntas: $preguntas, publicada: $publicada, fechaCreacion: $fechaCreacion)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $EncuestaCopyWith<$Res>  {
   factory $EncuestaCopyWith(Encuesta value, $Res Function(Encuesta) _then) = _$EncuestaCopyWithImpl;
 @useResult
 $Res call({
- String id, String titulo, String descripcion,@JsonKey(name: 'fecha_creacion') DateTime fechaCreacion, List<String> preguntas
+ String id, String titulo, String descripcion, List<Question> preguntas, bool publicada, DateTime fechaCreacion
 });
 
 
@@ -65,14 +65,15 @@ class _$EncuestaCopyWithImpl<$Res>
 
 /// Create a copy of Encuesta
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titulo = null,Object? descripcion = null,Object? fechaCreacion = null,Object? preguntas = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titulo = null,Object? descripcion = null,Object? preguntas = null,Object? publicada = null,Object? fechaCreacion = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,titulo: null == titulo ? _self.titulo : titulo // ignore: cast_nullable_to_non_nullable
 as String,descripcion: null == descripcion ? _self.descripcion : descripcion // ignore: cast_nullable_to_non_nullable
-as String,fechaCreacion: null == fechaCreacion ? _self.fechaCreacion : fechaCreacion // ignore: cast_nullable_to_non_nullable
-as DateTime,preguntas: null == preguntas ? _self.preguntas : preguntas // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as String,preguntas: null == preguntas ? _self.preguntas : preguntas // ignore: cast_nullable_to_non_nullable
+as List<Question>,publicada: null == publicada ? _self.publicada : publicada // ignore: cast_nullable_to_non_nullable
+as bool,fechaCreacion: null == fechaCreacion ? _self.fechaCreacion : fechaCreacion // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String titulo,  String descripcion, @JsonKey(name: 'fecha_creacion')  DateTime fechaCreacion,  List<String> preguntas)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String titulo,  String descripcion,  List<Question> preguntas,  bool publicada,  DateTime fechaCreacion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Encuesta() when $default != null:
-return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaCreacion,_that.preguntas);case _:
+return $default(_that.id,_that.titulo,_that.descripcion,_that.preguntas,_that.publicada,_that.fechaCreacion);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaCreacion,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String titulo,  String descripcion, @JsonKey(name: 'fecha_creacion')  DateTime fechaCreacion,  List<String> preguntas)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String titulo,  String descripcion,  List<Question> preguntas,  bool publicada,  DateTime fechaCreacion)  $default,) {final _that = this;
 switch (_that) {
 case _Encuesta():
-return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaCreacion,_that.preguntas);case _:
+return $default(_that.id,_that.titulo,_that.descripcion,_that.preguntas,_that.publicada,_that.fechaCreacion);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaCreacion,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String titulo,  String descripcion, @JsonKey(name: 'fecha_creacion')  DateTime fechaCreacion,  List<String> preguntas)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String titulo,  String descripcion,  List<Question> preguntas,  bool publicada,  DateTime fechaCreacion)?  $default,) {final _that = this;
 switch (_that) {
 case _Encuesta() when $default != null:
-return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaCreacion,_that.preguntas);case _:
+return $default(_that.id,_that.titulo,_that.descripcion,_that.preguntas,_that.publicada,_that.fechaCreacion);case _:
   return null;
 
 }
@@ -213,20 +214,21 @@ return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaCreacion,_tha
 @JsonSerializable()
 
 class _Encuesta implements Encuesta {
-  const _Encuesta({required this.id, required this.titulo, required this.descripcion, @JsonKey(name: 'fecha_creacion') required this.fechaCreacion, required final  List<String> preguntas}): _preguntas = preguntas;
+  const _Encuesta({required this.id, required this.titulo, required this.descripcion, required final  List<Question> preguntas, this.publicada = false, required this.fechaCreacion}): _preguntas = preguntas;
   factory _Encuesta.fromJson(Map<String, dynamic> json) => _$EncuestaFromJson(json);
 
 @override final  String id;
 @override final  String titulo;
 @override final  String descripcion;
-@override@JsonKey(name: 'fecha_creacion') final  DateTime fechaCreacion;
- final  List<String> _preguntas;
-@override List<String> get preguntas {
+ final  List<Question> _preguntas;
+@override List<Question> get preguntas {
   if (_preguntas is EqualUnmodifiableListView) return _preguntas;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_preguntas);
 }
 
+@override@JsonKey() final  bool publicada;
+@override final  DateTime fechaCreacion;
 
 /// Create a copy of Encuesta
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Encuesta&&(identical(other.id, id) || other.id == id)&&(identical(other.titulo, titulo) || other.titulo == titulo)&&(identical(other.descripcion, descripcion) || other.descripcion == descripcion)&&(identical(other.fechaCreacion, fechaCreacion) || other.fechaCreacion == fechaCreacion)&&const DeepCollectionEquality().equals(other._preguntas, _preguntas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Encuesta&&(identical(other.id, id) || other.id == id)&&(identical(other.titulo, titulo) || other.titulo == titulo)&&(identical(other.descripcion, descripcion) || other.descripcion == descripcion)&&const DeepCollectionEquality().equals(other._preguntas, _preguntas)&&(identical(other.publicada, publicada) || other.publicada == publicada)&&(identical(other.fechaCreacion, fechaCreacion) || other.fechaCreacion == fechaCreacion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titulo,descripcion,fechaCreacion,const DeepCollectionEquality().hash(_preguntas));
+int get hashCode => Object.hash(runtimeType,id,titulo,descripcion,const DeepCollectionEquality().hash(_preguntas),publicada,fechaCreacion);
 
 @override
 String toString() {
-  return 'Encuesta(id: $id, titulo: $titulo, descripcion: $descripcion, fechaCreacion: $fechaCreacion, preguntas: $preguntas)';
+  return 'Encuesta(id: $id, titulo: $titulo, descripcion: $descripcion, preguntas: $preguntas, publicada: $publicada, fechaCreacion: $fechaCreacion)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$EncuestaCopyWith<$Res> implements $EncuestaCopyWith<$Res>
   factory _$EncuestaCopyWith(_Encuesta value, $Res Function(_Encuesta) _then) = __$EncuestaCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String titulo, String descripcion,@JsonKey(name: 'fecha_creacion') DateTime fechaCreacion, List<String> preguntas
+ String id, String titulo, String descripcion, List<Question> preguntas, bool publicada, DateTime fechaCreacion
 });
 
 
@@ -278,14 +280,15 @@ class __$EncuestaCopyWithImpl<$Res>
 
 /// Create a copy of Encuesta
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titulo = null,Object? descripcion = null,Object? fechaCreacion = null,Object? preguntas = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titulo = null,Object? descripcion = null,Object? preguntas = null,Object? publicada = null,Object? fechaCreacion = null,}) {
   return _then(_Encuesta(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,titulo: null == titulo ? _self.titulo : titulo // ignore: cast_nullable_to_non_nullable
 as String,descripcion: null == descripcion ? _self.descripcion : descripcion // ignore: cast_nullable_to_non_nullable
-as String,fechaCreacion: null == fechaCreacion ? _self.fechaCreacion : fechaCreacion // ignore: cast_nullable_to_non_nullable
-as DateTime,preguntas: null == preguntas ? _self._preguntas : preguntas // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as String,preguntas: null == preguntas ? _self._preguntas : preguntas // ignore: cast_nullable_to_non_nullable
+as List<Question>,publicada: null == publicada ? _self.publicada : publicada // ignore: cast_nullable_to_non_nullable
+as bool,fechaCreacion: null == fechaCreacion ? _self.fechaCreacion : fechaCreacion // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 

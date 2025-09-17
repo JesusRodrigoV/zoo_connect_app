@@ -225,6 +225,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  diffutil_dart:
+    dependency: transitive
+    description:
+      name: diffutil_dart
+      sha256: e0297e4600b9797edff228ed60f4169a778ea357691ec98408fa3b72994c7d06
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
+  diffutil_sliverlist:
+    dependency: transitive
+    description:
+      name: diffutil_sliverlist
+      sha256: d20d7d521506b24190846cdbb6007e1b86fc0c26f04419cf359e426890911593
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -294,6 +318,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
+  flutter_survey:
+    dependency: "direct main"
+    description:
+      name: flutter_survey
+      sha256: "85f11151e9c877c0a039b4c26c57b13d6cb6dbbb53bfec1c6d5dfd596ddc3964"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter

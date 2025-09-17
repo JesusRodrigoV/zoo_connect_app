@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_survey/flutter_survey.dart';
 
 part 'encuesta.freezed.dart';
 part 'encuesta.g.dart';
@@ -9,8 +10,9 @@ abstract class Encuesta with _$Encuesta {
     required String id,
     required String titulo,
     required String descripcion,
-    @JsonKey(name: 'fecha_creacion') required DateTime fechaCreacion,
-    required List<String> preguntas,
+    required List<Question> preguntas,
+    @Default(false) bool publicada,
+    required DateTime fechaCreacion,
   }) = _Encuesta;
 
   factory Encuesta.fromJson(Map<String, dynamic> json) =>
