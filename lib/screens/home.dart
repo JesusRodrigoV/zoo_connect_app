@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zoo_connect_app/models/auth/rol.dart';
+import 'package:zoo_connect_app/models/auth/usuario.dart';
 import 'package:zoo_connect_app/screens/home/home_page.dart';
 import 'package:zoo_connect_app/screens/quiz/quiz_bienvenida.dart';
 import 'package:zoo_connect_app/screens/perfil/perfil.dart';
@@ -23,7 +25,18 @@ class _HomeState extends State<Home> {
   }
 
   Widget terceraPagina() {
-    return PerfilPage();
+    return PerfilPage(
+      usuario: Usuario(
+        idUsuario: 1,
+        nombre: 'Nombre',
+        email: 'email@example.com',
+        password: 'password',
+        createdAt: DateTime(2012, 1, 1),
+        rol: Rol.administrador,
+        fotoUrl: '',
+        updatedAt: DateTime.now(),
+      ),
+    );
   }
 
   void onNavigationDestinationSelected(int index) {

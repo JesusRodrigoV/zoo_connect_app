@@ -1,14 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:zoo_connect_app/models/auth/usuario.dart';
 import 'package:zoo_connect_app/screens/settings/settings.dart';
 
 class PerfilPage extends StatelessWidget {
-  const PerfilPage({super.key});
+  final Usuario usuario;
+
+  const PerfilPage({super.key, required this.usuario});
 
   @override
   Widget build(BuildContext context) {
-    final profileImageUrl = '';
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+
+    final ahora = DateTime.now();
+
+    final diferencia = ahora.difference(usuario.createdAt);
+
+    String textoFecha;
+    if (diferencia.inDays < 30) {
+      textoFecha = 'Miembro nuevo';
+    } else if (diferencia.inDays < 365) {
+      final meses = (diferencia.inDays / 30).floor();
+      textoFecha = 'Miembro desde hace $meses mes${meses > 1 ? 'es' : ''}';
+    } else {
+      final anios = (diferencia.inDays / 365).floor();
+      textoFecha = 'Miembro desde hace $anios año${anios > 1 ? 's' : ''}';
+    }
+
+    if (usuario.rol.id != 1) {
+      final anios = (diferencia.inDays / 365).floor();
+      textoFecha =
+          '${usuario.rol.name} desde hace $anios año${anios > 1 ? 's' : ''}';
+      if (diferencia.inDays < 365) {
+        final meses = (diferencia.inDays / 30).floor();
+        textoFecha =
+            '${usuario.rol.name} desde hace $meses mes${meses > 1 ? 'es' : ''}';
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -23,28 +51,29 @@ class PerfilPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => SettingsPage()),
             ),
             icon: Icon(Icons.settings),
+            tooltip: 'Ajustes',
           ),
           IconButton(
+            icon: Icon(Icons.logout_sharp),
+            hoverColor: Colors.red.withAlpha(200),
+            tooltip: 'Cerrar Sesion',
             onPressed: () => showDialog(
               context: context,
               builder: (BuildContext context) {
-                // El diálogo contendrá el Card
                 return AlertDialog(
                   title: const Text("Cerrar Sesión"),
                   content: const Text("¡Has cerrado sesión!"),
                   actions: <Widget>[
                     TextButton(
-                      child: const Text("Aceptar"),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
+                      child: const Text("Aceptar"),
                     ),
                   ],
                 );
               },
             ),
-            icon: Icon(Icons.logout_sharp),
-            hoverColor: Colors.red.withAlpha(200),
           ),
         ],
         centerTitle: true,
@@ -64,15 +93,15 @@ class PerfilPage extends StatelessWidget {
                   color: colors.primary.withAlpha(255),
                   width: 3,
                 ),
-                image: profileImageUrl.isNotEmpty
+                image: usuario.fotoUrl.isNotEmpty
                     ? DecorationImage(
-                        image: NetworkImage(profileImageUrl),
+                        image: NetworkImage(usuario.fotoUrl),
                         fit: BoxFit.cover,
                       )
                     : null,
                 color: Colors.grey[300],
               ),
-              child: profileImageUrl.isEmpty
+              child: usuario.fotoUrl.isEmpty
                   ? const Icon(Icons.person, size: 40, color: Colors.grey)
                   : null,
             ),
@@ -91,7 +120,7 @@ class PerfilPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Aqui va el nombre",
+                      usuario.nombre,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -101,18 +130,18 @@ class PerfilPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          color: colors.primary,
-                          size: 20,
-                        ),
+                        Icon(Icons.beenhere, color: colors.primary, size: 20),
                         const SizedBox(width: 8),
-                        Text(
-                          "Ubi",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: colors.onSurface,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              textoFecha,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: colors.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -120,9 +149,9 @@ class PerfilPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatItem("88", 'Portfolio', colors),
-                        _buildStatItem("45", 'Followers', colors),
-                        _buildStatItem("12", 'Following', colors),
+                        _buildStatItem("88", 'Quiz', colors),
+                        _buildStatItem("45", 'Puntos', colors),
+                        _buildStatItem("12", 'Encuestas', colors),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -180,6 +209,22 @@ class PerfilPage extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          "Cerrar Sesión",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
