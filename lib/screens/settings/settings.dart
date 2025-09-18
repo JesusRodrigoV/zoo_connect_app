@@ -11,7 +11,7 @@ class SettingsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Configuracion'), centerTitle: true),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(18.0),
         child: ListView(
           children: [
             ThemeConfiguration(),
