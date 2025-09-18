@@ -1,5 +1,6 @@
 import 'package:zoo_connect_app/providers/settings/theme_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:zoo_connect_app/screens/auth/bienvenida.dart';
 import 'package:zoo_connect_app/screens/auth/login.dart';
 import 'package:zoo_connect_app/screens/auth/signup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,7 @@ class MainApp extends ConsumerWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
+        '/bienvenida': (context) => const BienvenidaScreen(),
       },
     );
   }

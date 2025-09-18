@@ -13,6 +13,10 @@ class HomePage extends StatelessWidget {
         title: Text("ZooConnet"),
         centerTitle: true,
         actions: [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/bienvenida'),
+            icon: Icon(Icons.abc),
+          ),
           IconButton.filledTonal(onPressed: () {}, icon: Icon(Icons.person)),
         ],
       ),
