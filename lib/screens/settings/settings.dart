@@ -12,7 +12,13 @@ class SettingsPage extends ConsumerWidget {
       appBar: AppBar(title: const Text('Configuracion'), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: ListView(children: [ThemeConfiguration(), SoundConfiguration()]),
+        child: ListView(
+          children: [
+            ThemeConfiguration(),
+            SizedBox(height: 15),
+            SoundConfiguration(),
+          ],
+        ),
       ),
     );
   }
