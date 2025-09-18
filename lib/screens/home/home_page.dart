@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zoo_connect_app/widgets/home/animal_dia.dart';
 import 'package:zoo_connect_app/widgets/home/encuesta_card.dart';
 import 'package:zoo_connect_app/widgets/home/quiz_card.dart';
+import 'package:zoo_connect_app/widgets/profile/profile_icon_button.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -12,9 +13,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("ZooConnet"),
         centerTitle: true,
-        actions: [
-          IconButton.filledTonal(onPressed: () {}, icon: Icon(Icons.person)),
-        ],
+        actions: [ProfileIconButton()],
       ),
       body: SingleChildScrollView(
         child: Container(
