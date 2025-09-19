@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zoo_connect_app/models/auth/rol.dart';
 import 'package:zoo_connect_app/models/auth/usuario.dart';
 import 'package:zoo_connect_app/screens/settings/settings.dart';
-import 'package:zoo_connect_app/screens/user_stats/user_stats_page.dart';
+//import 'package:zoo_connect_app/screens/user_stats/user_stats_page.dart';
 import 'package:zoo_connect_app/screens/user_stats/user_participations_page.dart';
 import 'package:zoo_connect_app/widgets/dialogs/logout_dialog.dart';
 
@@ -142,6 +142,7 @@ class PerfilPage extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 20),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -150,7 +151,9 @@ class PerfilPage extends ConsumerWidget {
                         _buildStatItem("12", 'Encuestas', colors),
                       ],
                     ),
+                    /*
                     const SizedBox(height: 20),
+                    
                     Row(
                       children: [
                         Expanded(
@@ -176,8 +179,10 @@ class PerfilPage extends ConsumerWidget {
                         ),
                       ],
                     ),
+                    */
                     SizedBox(height: 20),
-                    _buildMenuItem(
+                    /*
+                    //_buildMenuItem(
                       'Mis Estadísticas',
                       colors,
                       onTap: () => Navigator.push(
@@ -188,6 +193,7 @@ class PerfilPage extends ConsumerWidget {
                       ),
                       icon: Icons.bar_chart,
                     ),
+                    */
                     const SizedBox(height: 16),
 
                     _buildMenuItem(

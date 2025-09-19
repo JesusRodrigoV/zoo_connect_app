@@ -26,9 +26,9 @@ class _ParticipationDetailPageState
 
   void _cargarParticipacion() {
     final surveyRepository = ref.read(surveyRepositoryProvider);
-    _participacionFuture = surveyRepository.getParticipationDetails(
-      widget.participationId,
-    );
+    _participacionFuture = surveyRepository
+        .getParticipationDetails(widget.participationId)
+        .then((json) => SurveyParticipation.fromJson(json));
   }
 
   @override
