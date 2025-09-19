@@ -11,6 +11,8 @@ abstract class SurveyState with _$SurveyState {
     @Default([]) List<SurveyParticipation> participations,
     Survey? selectedSurvey,
     SurveyParticipation? selectedParticipation,
+    @Default([]) List<Map<String, dynamic>> surveyStats,
+    Map<String, dynamic>? selectedSurveyStats,
     @Default(false) bool isLoading,
     String? error,
   }) = _SurveyState;

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zoo_connect_app/providers/quiz/quiz_config_provider.dart';
+import 'package:zoo_connect_app/screens/quiz/quiz_page.dart';
 
-class QuizCard extends StatelessWidget {
+class QuizCard extends ConsumerWidget {
   const QuizCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Container(
@@ -28,7 +31,7 @@ class QuizCard extends StatelessWidget {
                       Text(
                         "¡Ponte a prueba!",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: colors.onPrimary,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -37,14 +40,23 @@ class QuizCard extends StatelessWidget {
                       SizedBox(height: 15),
                       Text(
                         "¿Cuantos sabes de animales? Realiza nuestros quizzes y descúbrelo",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: colors.onPrimary),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                       ),
                       SizedBox(height: 15),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          ref
+                              .read(quizConfigProvider.notifier)
+                              .setRandomConfig();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const QuizPage(),
+                            ),
+                          );
+                        },
                         child: Text(
                           "Jugar",
                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -54,7 +66,7 @@ class QuizCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 15),
-                Icon(Icons.quiz_outlined, color: Colors.white, size: 64),
+                Icon(Icons.quiz_outlined, color: colors.onPrimary, size: 64),
               ],
             ),
           ],

@@ -253,18 +253,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             child: FilledButton(
                               onPressed: isLoading ? null : _submitForm,
                               child: isLoading
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CustomLoader(size: 60),
-                                        ),
-                                      ],
-                                    )
-                                  : Text("Crear Cuenta"),
+                                  ? CustomLoader(size: 60)
+                                  : const Text("Crear Cuenta"),
                             ),
                           ),
                         ],

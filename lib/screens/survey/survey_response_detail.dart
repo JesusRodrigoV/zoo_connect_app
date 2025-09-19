@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:zoo_connect_app/models/survey/survey_option.dart';
 import 'package:zoo_connect_app/models/survey/survey_participation.dart';
 import 'package:zoo_connect_app/providers/survey/survey_provider.dart';
 import 'package:zoo_connect_app/widgets/shared/custom_loader.dart';
@@ -177,7 +178,16 @@ class _SurveyResponseDetailPageState
           physics: const NeverScrollableScrollPhysics(),
           itemCount: participation.respuestas.length,
           itemBuilder: (context, index) {
-            final answer = participation.respuestas[index];
+            final respuesta = participation.respuestas[index];
+            final pregunta = participation.preguntas?.firstWhere(
+              (p) => p.id == respuesta.preguntaId,
+            );
+            final opcion = pregunta?.opciones.firstWhere(
+              (o) => o.id == respuesta.opcionId,
+              orElse: () =>
+                  SurveyOption(id: -1, text: 'No encontrada', orden: -1),
+            );
+
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
               child: Padding(
@@ -186,17 +196,19 @@ class _SurveyResponseDetailPageState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Pregunta ${index + 1}',
+                      pregunta?.text ?? 'Pregunta ${index + 1}',
                       style: theme.textTheme.titleSmall?.copyWith(
-                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      answer.respuestaTexto ??
-                          answer.opcionId?.toString() ??
+                      opcion?.text ??
+                          respuesta.respuestaTexto ??
                           'Sin respuesta',
-                      style: theme.textTheme.bodyMedium,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                   ],
                 ),

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:zoo_connect_app/models/survey/respuesta_usuario.dart';
+import 'package:zoo_connect_app/models/survey/survey_question.dart';
 
 part 'survey_participation.freezed.dart';
 part 'survey_participation.g.dart';
@@ -25,7 +25,9 @@ abstract class SurveyParticipation with _$SurveyParticipation {
     @JsonKey(name: 'usuario_id') required int usuarioId,
     @JsonKey(name: 'fecha_participacion') required DateTime fechaParticipacion,
     @JsonKey(name: 'completada') required bool completada,
-    @Default([]) List<RespuestaUsuario> respuestas,
+    @JsonKey(name: 'respuestas') required List<SurveyAnswer> respuestas,
+    // Campo adicional para mantener preguntas de la encuesta
+    @JsonKey(name: 'preguntas') List<SurveyQuestion>? preguntas,
   }) = _SurveyParticipation;
 
   factory SurveyParticipation.fromJson(Map<String, dynamic> json) =>

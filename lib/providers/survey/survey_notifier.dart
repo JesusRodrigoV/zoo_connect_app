@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zoo_connect_app/models/survey/survey.dart';
 import 'package:zoo_connect_app/models/survey/survey_participation.dart';
 import 'package:zoo_connect_app/providers/survey/survey_state.dart';
@@ -24,28 +24,31 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
     }
   }
 
+  Future<void> loadSurveyById(int id) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final survey = await _repository.getSurveyById(id);
+      final stats = await _repository.getSurveyStats(id);
+
+      state = state.copyWith(
+        selectedSurvey: survey,
+        selectedSurveyStats: stats,
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+    }
+  }
+
   Future<void> createSurvey(Survey survey) async {
     try {
-      print('Iniciando creación de encuesta...'); // Debug
       state = state.copyWith(isLoading: true, error: null);
-
-      print('Datos de la encuesta:'); // Debug
-      print('Título: ${survey.titulo}'); // Debug
-      print('Descripción: ${survey.descripcion}'); // Debug
-      print('Fecha inicio: ${survey.fechaInicio}'); // Debug
-      print('Fecha fin: ${survey.fechaFin}'); // Debug
-      print('Preguntas: ${survey.preguntas.length}'); // Debug
-
       final newSurvey = await _repository.createSurvey(survey);
-      print('Encuesta creada exitosamente: ${newSurvey.id}'); // Debug
-
       state = state.copyWith(
         surveys: [...state.surveys, newSurvey],
         isLoading: false,
       );
-    } catch (e, stackTrace) {
-      print('Error al crear encuesta: $e'); // Debug
-      print('Stack trace: $stackTrace'); // Debug
+    } catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
@@ -99,7 +102,6 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
     }
   }
 
-  // Cargar todas las participaciones del usuario
   Future<void> loadUserParticipations() async {
     try {
       state = state.copyWith(isLoading: true, error: null);
@@ -110,15 +112,14 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
     }
   }
 
-  // Cargar los detalles de una participación específica
   Future<void> loadParticipationDetails(String participationId) async {
     try {
       state = state.copyWith(isLoading: true, error: null);
-      final participation = await _repository.getParticipationDetails(
+      final participationData = await _repository.getParticipationDetails(
         int.parse(participationId),
       );
       state = state.copyWith(
-        selectedParticipation: participation,
+        selectedParticipation: SurveyParticipation.fromJson(participationData),
         isLoading: false,
       );
     } catch (e) {
@@ -126,16 +127,25 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
     }
   }
 
-  // Cargar estadísticas de una encuesta
   Future<Map<String, dynamic>> loadSurveyStats(String surveyId) async {
     try {
       state = state.copyWith(isLoading: true, error: null);
       final stats = await _repository.getSurveyStats(int.parse(surveyId));
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(selectedSurveyStats: stats, isLoading: false);
       return stats;
     } catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
       rethrow;
+    }
+  }
+
+  Future<void> loadAllStats() async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final stats = await _repository.getAllStats();
+      state = state.copyWith(surveyStats: stats, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
 }

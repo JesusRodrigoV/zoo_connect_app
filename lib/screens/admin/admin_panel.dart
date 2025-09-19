@@ -44,12 +44,14 @@ class AdminPanelPage extends ConsumerWidget {
             icon: Icons.analytics_outlined,
             onTap: () => Navigator.pushNamed(context, '/surveys/stats'),
           ),
+          /*
           AdminSurveyCard(
             title: 'Usuarios',
             description: 'Gestionar usuarios y permisos',
             icon: Icons.people_outline,
             onTap: () {},
           ),
+        */
         ],
       ),
     );
