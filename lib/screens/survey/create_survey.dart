@@ -37,6 +37,7 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
     if (picked != null) {
       setState(() {
         _startDate = picked;
+        // CORREGIDO: Sintaxis incorrecta con asteriscos
         if (_endDate.isBefore(_startDate)) {
           _endDate = _startDate.add(const Duration(days: 1));
         }
@@ -69,7 +70,8 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
       barrierDismissible: false,
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setDialogState) {
+            // CORREGIDO: Renombrado para evitar conflictos
             return AlertDialog(
               title: const Text('Nueva Pregunta'),
               content: SingleChildScrollView(
@@ -79,10 +81,12 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                     TextField(
                       decoration: const InputDecoration(labelText: 'Pregunta'),
                       onChanged: (value) => questionText = value,
+                      // AGREGADO: Autofocus para mejor UX
+                      autofocus: true,
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: questionType,
+                      value: questionType,
                       decoration: const InputDecoration(
                         labelText: 'Tipo de Pregunta',
                       ),
@@ -94,75 +98,57 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                         DropdownMenuItem(value: 'texto', child: Text('Texto')),
                       ],
                       onChanged: (value) {
-                        setState(() {
-                          questionType = value!;
-                        });
+                        if (value != null) {
+                          setDialogState(() {
+                            questionType = value;
+                          });
+                        }
                       },
                     ),
                     if (questionType == 'opcion_unica') ...[
                       const SizedBox(height: 16),
-                      ...options.asMap().entries.map(
-                        (entry) => Row(
-                          children: [
-                            Expanded(child: Text(entry.value)),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                setState(() {
-                                  options.removeAt(entry.key);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          final TextEditingController optionController =
-                              TextEditingController();
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Nueva Opción'),
-                                content: TextField(
-                                  controller: optionController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Texto de la opción',
-                                  ),
-                                  autofocus: true,
-                                  onSubmitted: (value) {
-                                    if (value.trim().isNotEmpty) {
-                                      setState(() {
-                                        options.add(value);
-                                      });
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
+                      // CORREGIDO: Mejor manejo de la lista de opciones
+                      if (options.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            'No hay opciones. Agrega al menos una opción.',
+                            style: TextStyle(color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      else
+                        ...options.asMap().entries.map(
+                          (entry) => Card(
+                            child: ListTile(
+                              title: Text(entry.value),
+                              leading: CircleAvatar(
+                                radius: 12,
+                                child: Text('${entry.key + 1}'),
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
                                 ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('Cancelar'),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () {
-                                      final value = optionController.text;
-                                      if (value.trim().isNotEmpty) {
-                                        setState(() {
-                                          options.add(value);
-                                        });
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                    child: const Text('Agregar'),
-                                  ),
-                                ],
-                              );
-                            },
-                          ).then((_) => optionController.dispose());
+                                onPressed: () {
+                                  setDialogState(() {
+                                    options.removeAt(entry.key);
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final result = await _showAddOptionDialog();
+                          if (result != null && result.isNotEmpty) {
+                            setDialogState(() {
+                              options.add(result);
+                            });
+                          }
                         },
                         icon: const Icon(Icons.add),
                         label: const Text('Agregar Opción'),
@@ -173,56 +159,78 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: isProcessing
+                      ? null
+                      : () {
+                          Navigator.of(context).pop();
+                        },
                   child: const Text('Cancelar'),
                 ),
                 FilledButton(
-                  onPressed: () async {
-                    if (questionText.trim().isEmpty ||
-                        (questionType == 'opcion_unica' && options.isEmpty)) {
-                      return;
-                    }
+                  onPressed: isProcessing
+                      ? null
+                      : () async {
+                          // CORREGIDO: Mejor validación
+                          if (questionText.trim().isEmpty) {
+                            _showErrorSnackBar(
+                              'Por favor ingresa el texto de la pregunta',
+                            );
+                            return;
+                          }
 
-                    setState(() => isProcessing = true);
+                          if (questionType == 'opcion_unica' &&
+                              options.length < 2) {
+                            _showErrorSnackBar(
+                              'Las preguntas de opción única necesitan al menos 2 opciones',
+                            );
+                            return;
+                          }
 
-                    try {
-                      final surveyOptions = options
-                          .asMap()
-                          .entries
-                          .map(
-                            (e) =>
-                                SurveyOption(text: e.value, orden: e.key + 1),
-                          )
-                          .toList();
+                          setDialogState(() => isProcessing = true);
 
-                      final question = SurveyQuestion(
-                        text: questionText,
-                        esOpcionUnica: questionType == 'opcion_unica',
-                        orden: _questions.length + 1,
-                        opciones: surveyOptions,
-                      );
+                          try {
+                            final surveyOptions = options
+                                .asMap()
+                                .entries
+                                .map(
+                                  (e) => SurveyOption(
+                                    text: e.value.trim(),
+                                    orden: e.key + 1,
+                                  ),
+                                )
+                                .toList();
 
-                      await Future.delayed(const Duration(milliseconds: 100));
+                            final question = SurveyQuestion(
+                              text: questionText.trim(),
+                              esOpcionUnica: questionType == 'opcion_unica',
+                              orden: _questions.length + 1,
+                              opciones: questionType == 'opcion_unica'
+                                  ? surveyOptions
+                                  : [],
+                            );
 
-                      if (!context.mounted) return;
+                            // CORREGIDO: Delay innecesario removido
+                            if (!mounted) return;
 
-                      Navigator.of(context).pop();
+                            Navigator.of(context).pop();
 
-                      setState(() {
-                        _questions.add(question);
-                      });
-                    } finally {
-                      if (context.mounted) {
-                        setState(() => isProcessing = false);
-                      }
-                    }
-                  },
-                  child: Builder(
-                    builder: (context) {
-                      if (isProcessing) {
-                        return const SizedBox(
+                            setState(() {
+                              _questions.add(question);
+                            });
+                          } catch (e) {
+                            if (mounted) {
+                              _showErrorSnackBar(
+                                'Error al crear la pregunta: $e',
+                              );
+                            }
+                          } finally {
+                            if (mounted) {
+                              setDialogState(() => isProcessing = false);
+                            }
+                          }
+                        },
+                  child: isProcessing
+                      ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -231,11 +239,8 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                               Colors.white,
                             ),
                           ),
-                        );
-                      }
-                      return const Text('Guardar');
-                    },
-                  ),
+                        )
+                      : const Text('Guardar'),
                 ),
               ],
             );
@@ -245,17 +250,89 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
     );
   }
 
+  Future<String?> _showAddOptionDialog() async {
+    final controller = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Nueva Opción'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Texto de la opción',
+              hintText: 'Ej: Opción A',
+            ),
+            autofocus: true,
+            onSubmitted: (value) {
+              if (value.trim().isNotEmpty) {
+                Navigator.of(context).pop(value.trim());
+              }
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final value = controller.text.trim();
+                if (value.isNotEmpty) {
+                  Navigator.of(context).pop(value);
+                }
+              },
+              child: const Text('Agregar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // AGREGADO: Método para mostrar errores
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   Future<void> _saveSurvey(BuildContext context) async {
     final colors = Theme.of(context).colorScheme;
 
-    if (_titleController.text.trim().isEmpty ||
-        _descriptionController.text.trim().isEmpty ||
-        _questions.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor complete todos los campos'),
-          backgroundColor: Colors.orange,
-        ),
+    // CORREGIDO: Mejor validación
+    if (_titleController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor ingresa un título para la encuesta');
+      return;
+    }
+
+    if (_descriptionController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor ingresa una descripción para la encuesta');
+      return;
+    }
+
+    if (_questions.isEmpty) {
+      _showErrorSnackBar('Por favor agrega al menos una pregunta');
+      return;
+    }
+
+    // CORREGIDO: Validar que las fechas sean lógicas
+    if (_endDate.isBefore(_startDate)) {
+      _showErrorSnackBar(
+        'La fecha de fin no puede ser anterior a la fecha de inicio',
       );
       return;
     }
@@ -264,26 +341,21 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: Card(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Guardando encuesta...'),
-              ],
-            ),
-          ),
+      builder: (context) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Guardando encuesta...'),
+          ],
         ),
       ),
     );
 
     final survey = Survey(
-      titulo: _titleController.text,
-      descripcion: _descriptionController.text,
+      titulo: _titleController.text.trim(),
+      descripcion: _descriptionController.text.trim(),
       fechaInicio: _startDate,
       fechaFin: _endDate,
       isActive: true,
@@ -295,37 +367,33 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
 
       if (!mounted) return;
 
-      // Cerrar el diálogo de carga
+      // Cerrar diálogo de carga
       Navigator.of(context).pop();
 
-      // Mostrar mensaje de éxito
+      // Mostrar éxito
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 8),
-              Text(
-                'Encuesta creada exitosamente',
-                style: TextStyle(color: colors.onPrimaryContainer),
-              ),
+              Text('Encuesta creada exitosamente'),
             ],
           ),
-          backgroundColor: colors.primaryContainer,
-          duration: Duration(seconds: 2),
+          backgroundColor: colors.primary,
           behavior: SnackBarBehavior.floating,
         ),
       );
 
-      // Regresar a la pantalla anterior
+      // Volver a la página anterior
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
 
-      // Cerrar el diálogo de carga
+      // Cerrar diálogo de carga
       Navigator.of(context).pop();
 
-      // Mostrar mensaje de error
+      // Mostrar error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -337,12 +405,12 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
           ),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 4),
+          behavior: SnackBarBehavior.floating,
           action: SnackBarAction(
             label: 'OK',
             textColor: Colors.white,
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
+            onPressed: () =>
+                ScaffoldMessenger.of(context).hideCurrentSnackBar(),
           ),
         ),
       );
@@ -365,7 +433,9 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
               decoration: const InputDecoration(
                 labelText: 'Título',
                 border: OutlineInputBorder(),
+                hintText: 'Ej: Encuesta de Satisfacción',
               ),
+              textCapitalization: TextCapitalization.sentences,
             ),
             const SizedBox(height: 16),
             TextField(
@@ -373,69 +443,164 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
               decoration: const InputDecoration(
                 labelText: 'Descripción',
                 border: OutlineInputBorder(),
+                hintText: 'Describe el propósito de esta encuesta...',
               ),
               maxLines: 3,
+              textCapitalization: TextCapitalization.sentences,
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
-                  child: ListTile(
-                    title: const Text('Fecha de inicio'),
-                    subtitle: Text(dateFormat.format(_startDate)),
-                    onTap: _selectStartDate,
-                    trailing: const Icon(Icons.calendar_today),
+                  child: Card(
+                    child: ListTile(
+                      title: const Text('Fecha de inicio'),
+                      subtitle: Text(dateFormat.format(_startDate)),
+                      onTap: _selectStartDate,
+                      trailing: const Icon(Icons.calendar_today),
+                    ),
                   ),
                 ),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: ListTile(
-                    title: const Text('Fecha de fin'),
-                    subtitle: Text(dateFormat.format(_endDate)),
-                    onTap: _selectEndDate,
-                    trailing: const Icon(Icons.calendar_today),
+                  child: Card(
+                    child: ListTile(
+                      title: const Text('Fecha de fin'),
+                      subtitle: Text(dateFormat.format(_endDate)),
+                      onTap: _selectEndDate,
+                      trailing: const Icon(Icons.calendar_today),
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Preguntas',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                const Text(
+                  'Preguntas',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                Text(
+                  '${_questions.length} pregunta${_questions.length != 1 ? 's' : ''}',
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            ..._questions.map((question) {
-              return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  title: Text(question.text),
-                  subtitle: Text(
-                    question.esOpcionUnica
-                        ? '${question.opciones.length} opciones'
-                        : 'Respuesta de texto',
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      setState(() {
-                        _questions.remove(question);
-                        for (var i = 0; i < _questions.length; i++) {
-                          _questions[i] = _questions[i].copyWith(orden: i + 1);
-                        }
-                      });
-                    },
+            const SizedBox(height: 12),
+
+            // CORREGIDO: Mejor presentación de las preguntas
+            if (_questions.isEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.quiz_outlined,
+                        size: 48,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No hay preguntas aún',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Agrega preguntas para tu encuesta',
+                        style: TextStyle(color: Colors.grey[500]),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            }),
+              )
+            else
+              ...List.generate(_questions.length, (index) {
+                final question = _questions[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ExpansionTile(
+                    leading: CircleAvatar(
+                      radius: 16,
+                      child: Text('${index + 1}'),
+                    ),
+                    title: Text(
+                      question.text,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      question.esOpcionUnica
+                          ? '${question.opciones.length} opciones'
+                          : 'Respuesta de texto',
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        setState(() {
+                          _questions.removeAt(index);
+                          // CORREGIDO: Reordenar preguntas correctamente
+                          for (var i = 0; i < _questions.length; i++) {
+                            _questions[i] = _questions[i].copyWith(
+                              orden: i + 1,
+                            );
+                          }
+                        });
+                      },
+                    ),
+                    children:
+                        question.esOpcionUnica && question.opciones.isNotEmpty
+                        ? [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Opciones:',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  ...question.opciones.map(
+                                    (option) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 16,
+                                        bottom: 4,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Text('• '),
+                                          Expanded(child: Text(option.text)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ]
+                        : [],
+                  ),
+                );
+              }),
+
             const SizedBox(height: 16),
             OutlinedButton.icon(
               onPressed: _addQuestion,
               icon: const Icon(Icons.add),
               label: const Text('Agregar Pregunta'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.all(16),
+              ),
             ),
             const SizedBox(height: 32),
             FilledButton(
               onPressed: _questions.isEmpty ? null : () => _saveSurvey(context),
+              style: FilledButton.styleFrom(padding: const EdgeInsets.all(16)),
               child: const Text('Guardar Encuesta'),
             ),
           ],
