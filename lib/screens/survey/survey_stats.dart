@@ -82,14 +82,12 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
       ),
       body: Column(
         children: [
-          // Header con selección de encuestas
           Container(
-            constraints: const BoxConstraints(minHeight: 120, maxHeight: 140),
+            constraints: const BoxConstraints(minHeight: 120, maxHeight: 200),
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: _buildSurveySelector(surveyState, colors),
           ),
           const Divider(height: 1),
-          // Área de estadísticas
           Expanded(child: _buildStatsArea(colors)),
         ],
       ),
@@ -135,7 +133,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       survey.titulo,
@@ -156,7 +154,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
                             ? colors.onPrimaryContainer
                             : colors.onSurfaceVariant,
                       ),
-                      maxLines: 2,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (isSelected) ...[
@@ -212,7 +210,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
             Icon(
               Icons.analytics_outlined,
               size: 64,
-              color: colors.primary.withOpacity(0.5),
+              color: colors.primary.withAlpha(155),
             ),
             const SizedBox(height: 16),
             Text(
@@ -233,10 +231,10 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
       );
     }
 
-    return _buildStatistics();
+    return _buildStatistics(colors);
   }
 
-  Widget _buildStatistics() {
+  Widget _buildStatistics(ColorScheme colors) {
     try {
       final stats = _selectedStats!;
       final totalResponses = _getTotalResponses(stats);
@@ -262,7 +260,6 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header con información general
             Container(
               width: double.infinity,
               margin: const EdgeInsets.all(16),
@@ -273,7 +270,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
                     Theme.of(context).colorScheme.primaryContainer,
                     Theme.of(
                       context,
-                    ).colorScheme.primaryContainer.withOpacity(0.7),
+                    ).colorScheme.primaryContainer.withAlpha(155),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(12),
@@ -312,8 +309,8 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
 
             // Gráficos por pregunta
             ...questionStats.entries.map((entry) {
-              return _buildQuestionChart(entry.key, entry.value);
-            }).toList(),
+              return _buildQuestionChart(entry.key, entry.value, colors);
+            }),
 
             const SizedBox(height: 32),
           ],
@@ -350,6 +347,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
   Widget _buildQuestionChart(
     String questionId,
     Map<String, dynamic> questionData,
+    ColorScheme colors,
   ) {
     final questionText = _getQuestionText(questionData);
     final options = _getQuestionOptions(questionData);
@@ -388,7 +386,6 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
       );
     }
 
-    // Filtrar opciones válidas y calcular porcentajes
     final validOptions = <String, Map<String, dynamic>>{};
     int totalValidResponses = 0;
 
@@ -416,12 +413,11 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
             const SizedBox(height: 4),
             Text(
               'Total de respuestas: $totalValidResponses',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: colors.onPrimary, fontSize: 14),
             ),
             const SizedBox(height: 24),
 
             if (validOptions.isNotEmpty) ...[
-              // Gráfico de barras
               SizedBox(
                 height: 250,
                 child: BarChart(
@@ -457,7 +453,6 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
 
               const SizedBox(height: 24),
 
-              // Lista de opciones con detalles
               ...validOptions.entries.map((entry) {
                 final optionText = _getOptionText(entry.value);
                 final count = _getResponseCount(entry.value);
@@ -469,9 +464,11 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: colors.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(
+                      color: colors.primaryContainer.withAlpha(55),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -502,7 +499,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
                               '$count respuestas (${percentage.toStringAsFixed(1)}%)',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[600],
+                                color: colors.onPrimaryContainer,
                               ),
                             ),
                           ],
@@ -511,7 +508,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ] else
               const Center(
                 child: Padding(
@@ -528,7 +525,6 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
     );
   }
 
-  // Métodos auxiliares para extraer datos de forma segura
   int _getTotalResponses(Map<String, dynamic> stats) {
     return (stats['total_participaciones'] as int? ??
             stats['totalResponses'] as int? ??

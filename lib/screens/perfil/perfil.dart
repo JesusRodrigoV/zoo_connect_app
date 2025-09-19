@@ -257,6 +257,7 @@ class PerfilPage extends ConsumerWidget {
     );
   }
 
+  /*
   Widget _buildActionButton(
     String text,
     bool isPrimary,
@@ -276,6 +277,7 @@ class PerfilPage extends ConsumerWidget {
     );
   }
 
+*/
   Widget _buildMenuItem(
     String title,
     ColorScheme colors, {
