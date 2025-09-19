@@ -311,10 +311,16 @@ class SurveyRepository {
     if (token == null) throw Exception('No autorizado');
 
     try {
+      final url = Uri.parse('$_surveysUrl/$surveyId/stats');
+      print('➡ SOLICITANDO ESTADÍSTICAS A: $url'); // <-- AGREGA ESTE PRINT
+
       final response = await http.get(
-        Uri.parse('$_surveysUrl/$surveyId/stats'),
+        url,
         headers: {'Authorization': 'Bearer $token'},
       );
+
+      print('⬅ RESPUESTA DEL SERVIDOR: ${response.statusCode}');
+      print('📦 CUERPO DE LA RESPUESTA: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;

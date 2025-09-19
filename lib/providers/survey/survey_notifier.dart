@@ -127,10 +127,10 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
     }
   }
 
-  Future<Map<String, dynamic>> loadSurveyStats(String surveyId) async {
+  Future<Map<String, dynamic>> loadSurveyStats(int surveyId) async {
     try {
       state = state.copyWith(isLoading: true, error: null);
-      final stats = await _repository.getSurveyStats(int.parse(surveyId));
+      final stats = await _repository.getSurveyStats(surveyId);
       state = state.copyWith(selectedSurveyStats: stats, isLoading: false);
       return stats;
     } catch (e) {

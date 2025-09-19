@@ -27,7 +27,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
     try {
       final stats = await ref
           .read(surveyProvider.notifier)
-          .loadSurveyStats(survey.id.toString());
+          .loadSurveyStats(survey.id!);
       setState(() {
         _selectedStats = stats;
       });
@@ -157,9 +157,9 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
         );
       }
 
-      final totalResponses = stats['total_responses'] ?? 0;
+      final totalResponses = stats['total_participaciones'] ?? 0;
       final questionStats =
-          stats['question_stats'] as Map<String, dynamic>? ?? {};
+          stats['estadisticas_preguntas'] as Map<String, dynamic>? ?? {};
 
       return SingleChildScrollView(
         child: Column(

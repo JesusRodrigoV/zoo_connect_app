@@ -37,7 +37,7 @@ class _SurveyResponseDetailPageState
       if (participation != null) {
         final stats = await ref
             .read(surveyProvider.notifier)
-            .loadSurveyStats(participation.encuestaId.toString());
+            .loadSurveyStats(participation.encuestaId);
         setState(() {
           _stats = stats;
         });
