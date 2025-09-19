@@ -5,6 +5,7 @@ import 'package:zoo_connect_app/widgets/home/animal_dia.dart';
 import 'package:zoo_connect_app/widgets/home/encuesta_card.dart';
 import 'package:zoo_connect_app/widgets/home/quiz_card.dart';
 import 'package:zoo_connect_app/widgets/profile/profile_icon_button.dart';
+import 'package:zoo_connect_app/widgets/shared/custom_loader.dart';
 import 'package:zoo_connect_app/widgets/shared/user_widgets.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -59,7 +60,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               if (surveyState.isLoading)
                 const SizedBox(
                   height: 250,
-                  child: Center(child: CircularProgressIndicator()),
+                  child: Center(child: CustomLoader()),
                 )
               else if (surveyState.error != null)
                 SizedBox(

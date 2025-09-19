@@ -21,7 +21,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
     Future.microtask(() => ref.read(surveyProvider.notifier).loadSurveys());
   }
 
-  Future<void> _loadStats(Survey survey) async {
+  Future<void> _loadStats(Survey survey, ColorScheme colors) async {
     try {
       final stats = await ref
           .read(surveyProvider.notifier)
@@ -34,7 +34,8 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error al cargar estadísticas: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: colors.error,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -44,6 +45,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
   @override
   Widget build(BuildContext context) {
     final surveyState = ref.watch(surveyProvider);
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -91,7 +93,7 @@ class _SurveyStatsPageState extends ConsumerState<SurveyStatsPage> {
                           title: Text(survey.titulo),
                           subtitle: Text(survey.descripcion),
                           trailing: const Icon(Icons.chevron_right),
-                          onTap: () => _loadStats(survey),
+                          onTap: () => _loadStats(survey, colors),
                         ),
                       );
                     },

@@ -12,6 +12,8 @@ class SurveyRepository {
   final String _baseUrl =
       dotenv.env['BASE_URL'] ?? 'http://localhost:8000/api/v1';
   String get _surveysUrl => '$_baseUrl/surveys';
+  String get _participationsUrl => '$_baseUrl/participations';
+  String get _responsesUrl => '$_baseUrl/responses';
   final Ref ref;
 
   SurveyRepository(this.ref);
@@ -20,7 +22,7 @@ class SurveyRepository {
     final token = ref.read(getTokenAccesoProvider);
     if (token == null) throw Exception('No autorizado');
 
-    var url = Uri.parse(_surveysUrl);
+    var url = Uri.parse('$_surveysUrl/');
 
     if (titulo != null || fecha != null) {
       final queryParams = <String, String>{};
@@ -64,7 +66,7 @@ class SurveyRepository {
 
     final client = http.Client();
     try {
-      var request = http.Request('POST', Uri.parse(_surveysUrl));
+      var request = http.Request('POST', Uri.parse('$_surveysUrl/'));
       request.headers.addAll({
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -99,7 +101,7 @@ class SurveyRepository {
           final newToken = ref.read(getTokenAccesoProvider);
           if (newToken != null && newToken != token) {
             // Reintentar la petición con el nuevo token
-            request = http.Request('POST', Uri.parse(_surveysUrl));
+            request = http.Request('POST', Uri.parse('$_surveysUrl/'));
             request.headers.addAll({
               'Authorization': 'Bearer $newToken',
               'Content-Type': 'application/json',
@@ -161,55 +163,7 @@ class SurveyRepository {
     }
   }
 
-  Future<SurveyParticipation> participateInSurvey(
-    int surveyId,
-    List<SurveyAnswer> answers,
-  ) async {
-    final token = ref.read(getTokenAccesoProvider);
-    if (token == null) throw Exception('No autorizado');
-
-    final participationResponse = await http.post(
-      Uri.parse('$_baseUrl/participations/'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({'encuesta_id': surveyId, 'completada': false}),
-    );
-
-    if (participationResponse.statusCode != 201) {
-      throw Exception(
-        'Error al crear la participación: ${participationResponse.body}',
-      );
-    }
-
-    final participation = SurveyParticipation.fromJson(
-      json.decode(participationResponse.body),
-    );
-
-    for (final answer in answers) {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/responses/'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          ...answer.toJson(),
-          'participacion_id': participation.id,
-          'pregunta_id': answer.preguntaId,
-          'opcion_id': answer.opcionId,
-        }),
-      );
-
-      if (response.statusCode != 201) {
-        throw Exception('Error al crear respuesta: ${response.body}');
-      }
-    }
-
-    return participation;
-  }
-
+  // Agregar pregunta a encuesta - usando la ruta correcta
   Future<SurveyQuestion> addQuestionToSurvey(
     int surveyId,
     SurveyQuestion question,
@@ -233,13 +187,72 @@ class SurveyRepository {
     }
   }
 
-  // Obtener todas las participaciones del usuario
+  // Crear participación
+  Future<SurveyParticipation> createParticipation(int surveyId) async {
+    final token = ref.read(getTokenAccesoProvider);
+    if (token == null) throw Exception('No autorizado');
+
+    final response = await http.post(
+      Uri.parse('$_participationsUrl/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({'encuesta_id': surveyId, 'completada': false}),
+    );
+
+    if (response.statusCode == 201) {
+      return SurveyParticipation.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Error al crear la participación: ${response.body}');
+    }
+  }
+
+  // Participar en encuesta (crear participación y respuestas)
+  Future<SurveyParticipation> participateInSurvey(
+    int surveyId,
+    List<SurveyAnswer> answers,
+  ) async {
+    final token = ref.read(getTokenAccesoProvider);
+    if (token == null) throw Exception('No autorizado');
+
+    // Crear la participación primero
+    final participation = await createParticipation(surveyId);
+
+    // Crear las respuestas
+    for (final answer in answers) {
+      final response = await http.post(
+        Uri.parse('$_responsesUrl/'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          ...answer.toJson(),
+          'participacion_id': participation.id,
+          'pregunta_id': answer.preguntaId,
+          'opcion_id': answer.opcionId,
+        }),
+      );
+
+      if (response.statusCode != 201) {
+        throw Exception('Error al crear respuesta: ${response.body}');
+      }
+    }
+
+    // Marcar participación como completada
+    await updateParticipation(participation.id, {'completada': true});
+
+    return participation;
+  }
+
+  // Obtener participaciones del usuario - NECESITAS AGREGAR ESTA RUTA AL BACKEND
   Future<List<SurveyParticipation>> getUserParticipations() async {
     final token = ref.read(getTokenAccesoProvider);
     if (token == null) throw Exception('No autorizado');
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/participations/'),
+      Uri.parse('$_participationsUrl/'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -253,6 +266,53 @@ class SurveyRepository {
     }
   }
 
+  // Obtener detalles de participación
+  Future<SurveyParticipation> getParticipationDetails(
+    int participationId,
+  ) async {
+    final token = ref.read(getTokenAccesoProvider);
+    if (token == null) throw Exception('No autorizado');
+
+    final response = await http.get(
+      Uri.parse('$_participationsUrl/$participationId'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return SurveyParticipation.fromJson(data);
+    } else if (response.statusCode == 404) {
+      throw Exception('Participación no encontrada o no pertenece al usuario');
+    } else {
+      throw Exception('Error al obtener los detalles de la participación');
+    }
+  }
+
+  // Actualizar participación
+  Future<SurveyParticipation> updateParticipation(
+    int participationId,
+    Map<String, dynamic> data,
+  ) async {
+    final token = ref.read(getTokenAccesoProvider);
+    if (token == null) throw Exception('No autorizado');
+
+    final response = await http.put(
+      Uri.parse('$_participationsUrl/$participationId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return SurveyParticipation.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Error al actualizar la participación');
+    }
+  }
+
+  // ESTA RUTA NO EXISTE EN TU BACKEND - Necesitas agregarla
   Future<Map<String, dynamic>> getSurveyStats(int surveyId) async {
     final token = ref.read(getTokenAccesoProvider);
     if (token == null) throw Exception('No autorizado');
@@ -276,27 +336,6 @@ class SurveyRepository {
       }
     } catch (e) {
       throw Exception('Error al obtener estadísticas: $e');
-    }
-  }
-
-  Future<SurveyParticipation> getParticipationDetails(
-    int participationId,
-  ) async {
-    final token = ref.read(getTokenAccesoProvider);
-    if (token == null) throw Exception('No autorizado');
-
-    final response = await http.get(
-      Uri.parse('$_baseUrl/participations/$participationId'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return SurveyParticipation.fromJson(data);
-    } else if (response.statusCode == 404) {
-      throw Exception('Participación no encontrada o no pertenece al usuario');
-    } else {
-      throw Exception('Error al obtener los detalles de la participación');
     }
   }
 }

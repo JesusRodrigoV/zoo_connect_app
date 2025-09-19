@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zoo_connect_app/models/auth/rol.dart';
 import 'package:zoo_connect_app/models/auth/usuario.dart';
 import 'package:zoo_connect_app/screens/settings/settings.dart';
+import 'package:zoo_connect_app/screens/user_stats/user_stats_page.dart';
+import 'package:zoo_connect_app/screens/user_stats/user_participations_page.dart';
 import 'package:zoo_connect_app/widgets/dialogs/logout_dialog.dart';
 
 class PerfilPage extends ConsumerWidget {
@@ -79,12 +81,12 @@ class PerfilPage extends ConsumerWidget {
 
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 110,
+              height: 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: colors.primary.withAlpha(255),
+                  color: colors.primary.withAlpha(150),
                   width: 3,
                 ),
                 image: usuario.fotoUrl != null
@@ -175,35 +177,33 @@ class PerfilPage extends ConsumerWidget {
                       ],
                     ),
                     SizedBox(height: 20),
-                    _buildMenuItem('Statistic Profile', colors),
-                    const SizedBox(height: 16),
-                    _buildMenuItem('Job Statistic', colors),
-                    const SizedBox(height: 32),
-                    _buildMenuItem('Job Statistic', colors),
-                    const SizedBox(height: 32),
-                    _buildMenuItem('Job Statistic', colors),
-                    const SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'About Me',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: colors.onSurfaceVariant.withAlpha(200),
-                          ),
+                    _buildMenuItem(
+                      'Mis Estadísticas',
+                      colors,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserStatsPage(usuario: usuario),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.edit_outlined,
-                            color: colors.onSurfaceVariant.withAlpha(200),
-                            size: 20,
-                          ),
-                        ),
-                      ],
+                      ),
+                      icon: Icons.bar_chart,
                     ),
+                    const SizedBox(height: 16),
+
+                    _buildMenuItem(
+                      'Mis Participaciones',
+                      colors,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              UserParticipationsPage(usuario: usuario),
+                        ),
+                      ),
+                      icon: Icons.history,
+                    ),
+                    const SizedBox(height: 32),
+
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
@@ -270,34 +270,50 @@ class PerfilPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuItem(String title, ColorScheme colors) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: colors.onSurfaceVariant.withAlpha(200),
-            width: 1,
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: colors.onSurface.withAlpha(200),
+  Widget _buildMenuItem(
+    String title,
+    ColorScheme colors, {
+    VoidCallback? onTap,
+    IconData? icon,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: colors.onSurfaceVariant.withAlpha(200),
+              width: 1,
             ),
           ),
-          Icon(
-            Icons.chevron_right,
-            color: colors.onSurface.withAlpha(200),
-            size: 20,
-          ),
-        ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, color: colors.primary, size: 24),
+                  const SizedBox(width: 12),
+                ],
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: colors.onSurface.withAlpha(200),
+                  ),
+                ),
+              ],
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: colors.onSurface.withAlpha(200),
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
