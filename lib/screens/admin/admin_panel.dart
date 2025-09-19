@@ -12,12 +12,20 @@ class AdminPanelPage extends ConsumerWidget {
         title: const Text('Panel de Administración'),
         centerTitle: true,
       ),
-      body: GridView.count(
-        padding: const EdgeInsets.all(16),
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
+      body: ListView(
         children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Gestión de Encuestas',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ),
+          const Divider(height: 1),
           AdminSurveyCard(
             title: 'Gestionar Encuestas',
             description: 'Crear, editar y eliminar encuestas',
@@ -31,10 +39,10 @@ class AdminPanelPage extends ConsumerWidget {
             onTap: () => Navigator.pushNamed(context, '/surveys/create'),
           ),
           AdminSurveyCard(
-            title: 'Ver Respuestas',
-            description: 'Analizar resultados de encuestas',
+            title: 'Estadísticas',
+            description: 'Ver resultados y participaciones',
             icon: Icons.analytics_outlined,
-            onTap: () {},
+            onTap: () => Navigator.pushNamed(context, '/surveys/stats'),
           ),
           AdminSurveyCard(
             title: 'Usuarios',

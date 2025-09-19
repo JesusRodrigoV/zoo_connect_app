@@ -17,7 +17,7 @@ abstract class Survey with _$Survey {
     @JsonKey(name: 'fecha_fin')
     @ISODateTimeConverter()
     required DateTime fechaFin,
-    @JsonKey(name: 'activa', defaultValue: true) required bool isActive,
+    @JsonKey(name: 'is_active', defaultValue: true) required bool isActive,
     @Default([]) @JsonKey(name: 'preguntas') List<SurveyQuestion> preguntas,
   }) = _Survey;
 

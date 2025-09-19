@@ -53,51 +53,140 @@ class _SurveyParticipationPageState
     });
   }
 
-  Future<void> _submitSurvey() async {
+  Future<void> _submitSurvey(BuildContext context) async {
+    final colors = Theme.of(context).colorScheme;
+
     final survey = ref.read(surveyProvider).selectedSurvey;
     if (survey == null) return;
 
-    // Verificar que todas las preguntas estén respondidas
+    // Validar respuestas
+    String? missingQuestion;
     for (final question in survey.preguntas) {
       final answer = _answers.firstWhere(
         (a) => a.preguntaId == question.id,
         orElse: () => SurveyAnswer(preguntaId: question.id!),
       );
 
-      if (question.type == 'opcion_unica' && answer.opcionId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Por favor responde la pregunta: ${question.text}'),
-          ),
-        );
-        return;
+      if (question.esOpcionUnica && answer.opcionId == null) {
+        missingQuestion = question.text;
+        break;
       }
 
-      if (question.type == 'texto' &&
+      if (!question.esOpcionUnica &&
           (answer.respuestaTexto == null ||
               answer.respuestaTexto!.trim().isEmpty)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Por favor responde la pregunta: ${question.text}'),
-          ),
-        );
-        return;
+        missingQuestion = question.text;
+        break;
       }
     }
+
+    if (missingQuestion != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('Por favor responde la pregunta: $missingQuestion'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    // Mostrar diálogo de carga
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Enviando respuestas...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
 
     try {
       await ref
           .read(surveyProvider.notifier)
           .participateInSurvey(survey.id!, _answers);
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+
+      if (!mounted) return;
+
+      // Cerrar diálogo de carga
+      Navigator.of(context).pop();
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: colors.onPrimaryContainer),
+              SizedBox(width: 8),
+              Text(
+                '¡Gracias por participar!',
+                style: TextStyle(color: colors.onPrimaryContainer),
+              ),
+            ],
+          ),
+          backgroundColor: colors.primaryContainer,
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      // Regresar a la pantalla anterior
+      Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
+      if (!mounted) return;
+
+      // Cerrar diálogo de carga
+      Navigator.of(context).pop();
+
+      // Mostrar error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: colors.onError),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Error al enviar respuestas: $e',
+                  style: TextStyle(color: colors.onError),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: colors.error,
+          duration: const Duration(seconds: 4),
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: 'OK',
+            textColor: Colors.white,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -175,23 +264,34 @@ class _SurveyParticipationPageState
                     children: [
                       Text(question.text, style: theme.textTheme.titleMedium),
                       const SizedBox(height: 16),
-                      if (question.type == 'opcion_unica') ...[
-                        ...question.opciones.map((option) {
-                          final isSelected = _answers.any(
-                            (a) =>
-                                a.preguntaId == question.id &&
-                                a.opcionId == option.id,
-                          );
-                          return RadioListTile(
-                            value: true,
-                            groupValue: isSelected,
-                            title: Text(option.text),
-                            onChanged: (_) {
-                              _selectOption(question, option.id!);
-                            },
-                          );
-                        }),
-                      ] else if (question.type == 'texto') ...[
+                      if (question.esOpcionUnica) ...[
+                        Builder(
+                          builder: (context) {
+                            final selectedOptionId = _answers
+                                .firstWhere(
+                                  (a) => a.preguntaId == question.id,
+                                  orElse: () =>
+                                      SurveyAnswer(preguntaId: question.id!),
+                                )
+                                .opcionId;
+
+                            return Column(
+                              children: question.opciones.map((option) {
+                                return RadioListTile<int?>(
+                                  value: option.id,
+                                  groupValue: selectedOptionId,
+                                  title: Text(option.text),
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      _selectOption(question, value);
+                                    }
+                                  },
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                      ] else ...[
                         TextField(
                           controller: _textControllers.putIfAbsent(
                             question.id!,
@@ -224,7 +324,7 @@ class _SurveyParticipationPageState
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: _submitSurvey,
+                onPressed: () => _submitSurvey(context),
                 child: const Text('Enviar Respuestas'),
               ),
             ),

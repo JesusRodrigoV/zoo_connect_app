@@ -14,7 +14,7 @@ _Survey _$SurveyFromJson(Map<String, dynamic> json) => _Survey(
     json['fecha_inicio'] as String,
   ),
   fechaFin: const ISODateTimeConverter().fromJson(json['fecha_fin'] as String),
-  isActive: json['activa'] as bool? ?? true,
+  isActive: json['is_active'] as bool? ?? true,
   preguntas:
       (json['preguntas'] as List<dynamic>?)
           ?.map((e) => SurveyQuestion.fromJson(e as Map<String, dynamic>))
@@ -28,6 +28,6 @@ Map<String, dynamic> _$SurveyToJson(_Survey instance) => <String, dynamic>{
   'descripcion': instance.descripcion,
   'fecha_inicio': const ISODateTimeConverter().toJson(instance.fechaInicio),
   'fecha_fin': const ISODateTimeConverter().toJson(instance.fechaFin),
-  'activa': instance.isActive,
+  'is_active': instance.isActive,
   'preguntas': instance.preguntas,
 };

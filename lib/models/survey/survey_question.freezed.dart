@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SurveyQuestion {
 
-@JsonKey(name: 'id_pregunta') int? get id;@JsonKey(name: 'texto_pregunta') String get text;@JsonKey(name: 'tipo_pregunta') String get type; int get orden; List<SurveyOption> get opciones;
+@JsonKey(name: 'id_pregunta') int? get id;@JsonKey(name: 'texto_pregunta') String get text;@JsonKey(name: 'es_opcion_unica') bool get esOpcionUnica; int? get orden; List<SurveyOption> get opciones;
 /// Create a copy of SurveyQuestion
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SurveyQuestionCopyWith<SurveyQuestion> get copyWith => _$SurveyQuestionCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyQuestion&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.orden, orden) || other.orden == orden)&&const DeepCollectionEquality().equals(other.opciones, opciones));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyQuestion&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.esOpcionUnica, esOpcionUnica) || other.esOpcionUnica == esOpcionUnica)&&(identical(other.orden, orden) || other.orden == orden)&&const DeepCollectionEquality().equals(other.opciones, opciones));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,text,type,orden,const DeepCollectionEquality().hash(opciones));
+int get hashCode => Object.hash(runtimeType,id,text,esOpcionUnica,orden,const DeepCollectionEquality().hash(opciones));
 
 @override
 String toString() {
-  return 'SurveyQuestion(id: $id, text: $text, type: $type, orden: $orden, opciones: $opciones)';
+  return 'SurveyQuestion(id: $id, text: $text, esOpcionUnica: $esOpcionUnica, orden: $orden, opciones: $opciones)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SurveyQuestionCopyWith<$Res>  {
   factory $SurveyQuestionCopyWith(SurveyQuestion value, $Res Function(SurveyQuestion) _then) = _$SurveyQuestionCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id_pregunta') int? id,@JsonKey(name: 'texto_pregunta') String text,@JsonKey(name: 'tipo_pregunta') String type, int orden, List<SurveyOption> opciones
+@JsonKey(name: 'id_pregunta') int? id,@JsonKey(name: 'texto_pregunta') String text,@JsonKey(name: 'es_opcion_unica') bool esOpcionUnica, int? orden, List<SurveyOption> opciones
 });
 
 
@@ -65,13 +65,13 @@ class _$SurveyQuestionCopyWithImpl<$Res>
 
 /// Create a copy of SurveyQuestion
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? text = null,Object? type = null,Object? orden = null,Object? opciones = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? text = null,Object? esOpcionUnica = null,Object? orden = freezed,Object? opciones = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,orden: null == orden ? _self.orden : orden // ignore: cast_nullable_to_non_nullable
-as int,opciones: null == opciones ? _self.opciones : opciones // ignore: cast_nullable_to_non_nullable
+as String,esOpcionUnica: null == esOpcionUnica ? _self.esOpcionUnica : esOpcionUnica // ignore: cast_nullable_to_non_nullable
+as bool,orden: freezed == orden ? _self.orden : orden // ignore: cast_nullable_to_non_nullable
+as int?,opciones: null == opciones ? _self.opciones : opciones // ignore: cast_nullable_to_non_nullable
 as List<SurveyOption>,
   ));
 }
@@ -157,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_pregunta')  int? id, @JsonKey(name: 'texto_pregunta')  String text, @JsonKey(name: 'tipo_pregunta')  String type,  int orden,  List<SurveyOption> opciones)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_pregunta')  int? id, @JsonKey(name: 'texto_pregunta')  String text, @JsonKey(name: 'es_opcion_unica')  bool esOpcionUnica,  int? orden,  List<SurveyOption> opciones)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SurveyQuestion() when $default != null:
-return $default(_that.id,_that.text,_that.type,_that.orden,_that.opciones);case _:
+return $default(_that.id,_that.text,_that.esOpcionUnica,_that.orden,_that.opciones);case _:
   return orElse();
 
 }
@@ -178,10 +178,10 @@ return $default(_that.id,_that.text,_that.type,_that.orden,_that.opciones);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_pregunta')  int? id, @JsonKey(name: 'texto_pregunta')  String text, @JsonKey(name: 'tipo_pregunta')  String type,  int orden,  List<SurveyOption> opciones)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_pregunta')  int? id, @JsonKey(name: 'texto_pregunta')  String text, @JsonKey(name: 'es_opcion_unica')  bool esOpcionUnica,  int? orden,  List<SurveyOption> opciones)  $default,) {final _that = this;
 switch (_that) {
 case _SurveyQuestion():
-return $default(_that.id,_that.text,_that.type,_that.orden,_that.opciones);case _:
+return $default(_that.id,_that.text,_that.esOpcionUnica,_that.orden,_that.opciones);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +198,10 @@ return $default(_that.id,_that.text,_that.type,_that.orden,_that.opciones);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id_pregunta')  int? id, @JsonKey(name: 'texto_pregunta')  String text, @JsonKey(name: 'tipo_pregunta')  String type,  int orden,  List<SurveyOption> opciones)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id_pregunta')  int? id, @JsonKey(name: 'texto_pregunta')  String text, @JsonKey(name: 'es_opcion_unica')  bool esOpcionUnica,  int? orden,  List<SurveyOption> opciones)?  $default,) {final _that = this;
 switch (_that) {
 case _SurveyQuestion() when $default != null:
-return $default(_that.id,_that.text,_that.type,_that.orden,_that.opciones);case _:
+return $default(_that.id,_that.text,_that.esOpcionUnica,_that.orden,_that.opciones);case _:
   return null;
 
 }
@@ -213,13 +213,13 @@ return $default(_that.id,_that.text,_that.type,_that.orden,_that.opciones);case 
 @JsonSerializable()
 
 class _SurveyQuestion implements SurveyQuestion {
-  const _SurveyQuestion({@JsonKey(name: 'id_pregunta') this.id, @JsonKey(name: 'texto_pregunta') required this.text, @JsonKey(name: 'tipo_pregunta') required this.type, required this.orden, final  List<SurveyOption> opciones = const []}): _opciones = opciones;
+  const _SurveyQuestion({@JsonKey(name: 'id_pregunta') this.id, @JsonKey(name: 'texto_pregunta') required this.text, @JsonKey(name: 'es_opcion_unica') required this.esOpcionUnica, this.orden, final  List<SurveyOption> opciones = const []}): _opciones = opciones;
   factory _SurveyQuestion.fromJson(Map<String, dynamic> json) => _$SurveyQuestionFromJson(json);
 
 @override@JsonKey(name: 'id_pregunta') final  int? id;
 @override@JsonKey(name: 'texto_pregunta') final  String text;
-@override@JsonKey(name: 'tipo_pregunta') final  String type;
-@override final  int orden;
+@override@JsonKey(name: 'es_opcion_unica') final  bool esOpcionUnica;
+@override final  int? orden;
  final  List<SurveyOption> _opciones;
 @override@JsonKey() List<SurveyOption> get opciones {
   if (_opciones is EqualUnmodifiableListView) return _opciones;
@@ -241,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyQuestion&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.orden, orden) || other.orden == orden)&&const DeepCollectionEquality().equals(other._opciones, _opciones));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyQuestion&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.esOpcionUnica, esOpcionUnica) || other.esOpcionUnica == esOpcionUnica)&&(identical(other.orden, orden) || other.orden == orden)&&const DeepCollectionEquality().equals(other._opciones, _opciones));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,text,type,orden,const DeepCollectionEquality().hash(_opciones));
+int get hashCode => Object.hash(runtimeType,id,text,esOpcionUnica,orden,const DeepCollectionEquality().hash(_opciones));
 
 @override
 String toString() {
-  return 'SurveyQuestion(id: $id, text: $text, type: $type, orden: $orden, opciones: $opciones)';
+  return 'SurveyQuestion(id: $id, text: $text, esOpcionUnica: $esOpcionUnica, orden: $orden, opciones: $opciones)';
 }
 
 
@@ -261,7 +261,7 @@ abstract mixin class _$SurveyQuestionCopyWith<$Res> implements $SurveyQuestionCo
   factory _$SurveyQuestionCopyWith(_SurveyQuestion value, $Res Function(_SurveyQuestion) _then) = __$SurveyQuestionCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id_pregunta') int? id,@JsonKey(name: 'texto_pregunta') String text,@JsonKey(name: 'tipo_pregunta') String type, int orden, List<SurveyOption> opciones
+@JsonKey(name: 'id_pregunta') int? id,@JsonKey(name: 'texto_pregunta') String text,@JsonKey(name: 'es_opcion_unica') bool esOpcionUnica, int? orden, List<SurveyOption> opciones
 });
 
 
@@ -278,13 +278,13 @@ class __$SurveyQuestionCopyWithImpl<$Res>
 
 /// Create a copy of SurveyQuestion
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? text = null,Object? type = null,Object? orden = null,Object? opciones = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? text = null,Object? esOpcionUnica = null,Object? orden = freezed,Object? opciones = null,}) {
   return _then(_SurveyQuestion(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,orden: null == orden ? _self.orden : orden // ignore: cast_nullable_to_non_nullable
-as int,opciones: null == opciones ? _self._opciones : opciones // ignore: cast_nullable_to_non_nullable
+as String,esOpcionUnica: null == esOpcionUnica ? _self.esOpcionUnica : esOpcionUnica // ignore: cast_nullable_to_non_nullable
+as bool,orden: freezed == orden ? _self.orden : orden // ignore: cast_nullable_to_non_nullable
+as int?,opciones: null == opciones ? _self._opciones : opciones // ignore: cast_nullable_to_non_nullable
 as List<SurveyOption>,
   ));
 }

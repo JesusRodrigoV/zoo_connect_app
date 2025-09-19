@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SurveyState {
 
- List<Survey> get surveys; Survey? get selectedSurvey; bool get isLoading; String? get error;
+ List<Survey> get surveys; List<SurveyParticipation> get participations; Survey? get selectedSurvey; SurveyParticipation? get selectedParticipation; bool get isLoading; String? get error;
 /// Create a copy of SurveyState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SurveyStateCopyWith<SurveyState> get copyWith => _$SurveyStateCopyWithImpl<Surv
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyState&&const DeepCollectionEquality().equals(other.surveys, surveys)&&(identical(other.selectedSurvey, selectedSurvey) || other.selectedSurvey == selectedSurvey)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyState&&const DeepCollectionEquality().equals(other.surveys, surveys)&&const DeepCollectionEquality().equals(other.participations, participations)&&(identical(other.selectedSurvey, selectedSurvey) || other.selectedSurvey == selectedSurvey)&&(identical(other.selectedParticipation, selectedParticipation) || other.selectedParticipation == selectedParticipation)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(surveys),selectedSurvey,isLoading,error);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(surveys),const DeepCollectionEquality().hash(participations),selectedSurvey,selectedParticipation,isLoading,error);
 
 @override
 String toString() {
-  return 'SurveyState(surveys: $surveys, selectedSurvey: $selectedSurvey, isLoading: $isLoading, error: $error)';
+  return 'SurveyState(surveys: $surveys, participations: $participations, selectedSurvey: $selectedSurvey, selectedParticipation: $selectedParticipation, isLoading: $isLoading, error: $error)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $SurveyStateCopyWith<$Res>  {
   factory $SurveyStateCopyWith(SurveyState value, $Res Function(SurveyState) _then) = _$SurveyStateCopyWithImpl;
 @useResult
 $Res call({
- List<Survey> surveys, Survey? selectedSurvey, bool isLoading, String? error
+ List<Survey> surveys, List<SurveyParticipation> participations, Survey? selectedSurvey, SurveyParticipation? selectedParticipation, bool isLoading, String? error
 });
 
 
-$SurveyCopyWith<$Res>? get selectedSurvey;
+$SurveyCopyWith<$Res>? get selectedSurvey;$SurveyParticipationCopyWith<$Res>? get selectedParticipation;
 
 }
 /// @nodoc
@@ -62,11 +62,13 @@ class _$SurveyStateCopyWithImpl<$Res>
 
 /// Create a copy of SurveyState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? surveys = null,Object? selectedSurvey = freezed,Object? isLoading = null,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? surveys = null,Object? participations = null,Object? selectedSurvey = freezed,Object? selectedParticipation = freezed,Object? isLoading = null,Object? error = freezed,}) {
   return _then(_self.copyWith(
 surveys: null == surveys ? _self.surveys : surveys // ignore: cast_nullable_to_non_nullable
-as List<Survey>,selectedSurvey: freezed == selectedSurvey ? _self.selectedSurvey : selectedSurvey // ignore: cast_nullable_to_non_nullable
-as Survey?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as List<Survey>,participations: null == participations ? _self.participations : participations // ignore: cast_nullable_to_non_nullable
+as List<SurveyParticipation>,selectedSurvey: freezed == selectedSurvey ? _self.selectedSurvey : selectedSurvey // ignore: cast_nullable_to_non_nullable
+as Survey?,selectedParticipation: freezed == selectedParticipation ? _self.selectedParticipation : selectedParticipation // ignore: cast_nullable_to_non_nullable
+as SurveyParticipation?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -82,6 +84,18 @@ $SurveyCopyWith<$Res>? get selectedSurvey {
 
   return $SurveyCopyWith<$Res>(_self.selectedSurvey!, (value) {
     return _then(_self.copyWith(selectedSurvey: value));
+  });
+}/// Create a copy of SurveyState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SurveyParticipationCopyWith<$Res>? get selectedParticipation {
+    if (_self.selectedParticipation == null) {
+    return null;
+  }
+
+  return $SurveyParticipationCopyWith<$Res>(_self.selectedParticipation!, (value) {
+    return _then(_self.copyWith(selectedParticipation: value));
   });
 }
 }
@@ -165,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Survey> surveys,  Survey? selectedSurvey,  bool isLoading,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Survey> surveys,  List<SurveyParticipation> participations,  Survey? selectedSurvey,  SurveyParticipation? selectedParticipation,  bool isLoading,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SurveyState() when $default != null:
-return $default(_that.surveys,_that.selectedSurvey,_that.isLoading,_that.error);case _:
+return $default(_that.surveys,_that.participations,_that.selectedSurvey,_that.selectedParticipation,_that.isLoading,_that.error);case _:
   return orElse();
 
 }
@@ -186,10 +200,10 @@ return $default(_that.surveys,_that.selectedSurvey,_that.isLoading,_that.error);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Survey> surveys,  Survey? selectedSurvey,  bool isLoading,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Survey> surveys,  List<SurveyParticipation> participations,  Survey? selectedSurvey,  SurveyParticipation? selectedParticipation,  bool isLoading,  String? error)  $default,) {final _that = this;
 switch (_that) {
 case _SurveyState():
-return $default(_that.surveys,_that.selectedSurvey,_that.isLoading,_that.error);case _:
+return $default(_that.surveys,_that.participations,_that.selectedSurvey,_that.selectedParticipation,_that.isLoading,_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +220,10 @@ return $default(_that.surveys,_that.selectedSurvey,_that.isLoading,_that.error);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Survey> surveys,  Survey? selectedSurvey,  bool isLoading,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Survey> surveys,  List<SurveyParticipation> participations,  Survey? selectedSurvey,  SurveyParticipation? selectedParticipation,  bool isLoading,  String? error)?  $default,) {final _that = this;
 switch (_that) {
 case _SurveyState() when $default != null:
-return $default(_that.surveys,_that.selectedSurvey,_that.isLoading,_that.error);case _:
+return $default(_that.surveys,_that.participations,_that.selectedSurvey,_that.selectedParticipation,_that.isLoading,_that.error);case _:
   return null;
 
 }
@@ -221,7 +235,7 @@ return $default(_that.surveys,_that.selectedSurvey,_that.isLoading,_that.error);
 
 
 class _SurveyState implements SurveyState {
-  const _SurveyState({final  List<Survey> surveys = const [], this.selectedSurvey, this.isLoading = false, this.error}): _surveys = surveys;
+  const _SurveyState({final  List<Survey> surveys = const [], final  List<SurveyParticipation> participations = const [], this.selectedSurvey, this.selectedParticipation, this.isLoading = false, this.error}): _surveys = surveys,_participations = participations;
   
 
  final  List<Survey> _surveys;
@@ -231,7 +245,15 @@ class _SurveyState implements SurveyState {
   return EqualUnmodifiableListView(_surveys);
 }
 
+ final  List<SurveyParticipation> _participations;
+@override@JsonKey() List<SurveyParticipation> get participations {
+  if (_participations is EqualUnmodifiableListView) return _participations;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_participations);
+}
+
 @override final  Survey? selectedSurvey;
+@override final  SurveyParticipation? selectedParticipation;
 @override@JsonKey() final  bool isLoading;
 @override final  String? error;
 
@@ -245,16 +267,16 @@ _$SurveyStateCopyWith<_SurveyState> get copyWith => __$SurveyStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyState&&const DeepCollectionEquality().equals(other._surveys, _surveys)&&(identical(other.selectedSurvey, selectedSurvey) || other.selectedSurvey == selectedSurvey)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyState&&const DeepCollectionEquality().equals(other._surveys, _surveys)&&const DeepCollectionEquality().equals(other._participations, _participations)&&(identical(other.selectedSurvey, selectedSurvey) || other.selectedSurvey == selectedSurvey)&&(identical(other.selectedParticipation, selectedParticipation) || other.selectedParticipation == selectedParticipation)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_surveys),selectedSurvey,isLoading,error);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_surveys),const DeepCollectionEquality().hash(_participations),selectedSurvey,selectedParticipation,isLoading,error);
 
 @override
 String toString() {
-  return 'SurveyState(surveys: $surveys, selectedSurvey: $selectedSurvey, isLoading: $isLoading, error: $error)';
+  return 'SurveyState(surveys: $surveys, participations: $participations, selectedSurvey: $selectedSurvey, selectedParticipation: $selectedParticipation, isLoading: $isLoading, error: $error)';
 }
 
 
@@ -265,11 +287,11 @@ abstract mixin class _$SurveyStateCopyWith<$Res> implements $SurveyStateCopyWith
   factory _$SurveyStateCopyWith(_SurveyState value, $Res Function(_SurveyState) _then) = __$SurveyStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<Survey> surveys, Survey? selectedSurvey, bool isLoading, String? error
+ List<Survey> surveys, List<SurveyParticipation> participations, Survey? selectedSurvey, SurveyParticipation? selectedParticipation, bool isLoading, String? error
 });
 
 
-@override $SurveyCopyWith<$Res>? get selectedSurvey;
+@override $SurveyCopyWith<$Res>? get selectedSurvey;@override $SurveyParticipationCopyWith<$Res>? get selectedParticipation;
 
 }
 /// @nodoc
@@ -282,11 +304,13 @@ class __$SurveyStateCopyWithImpl<$Res>
 
 /// Create a copy of SurveyState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? surveys = null,Object? selectedSurvey = freezed,Object? isLoading = null,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? surveys = null,Object? participations = null,Object? selectedSurvey = freezed,Object? selectedParticipation = freezed,Object? isLoading = null,Object? error = freezed,}) {
   return _then(_SurveyState(
 surveys: null == surveys ? _self._surveys : surveys // ignore: cast_nullable_to_non_nullable
-as List<Survey>,selectedSurvey: freezed == selectedSurvey ? _self.selectedSurvey : selectedSurvey // ignore: cast_nullable_to_non_nullable
-as Survey?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as List<Survey>,participations: null == participations ? _self._participations : participations // ignore: cast_nullable_to_non_nullable
+as List<SurveyParticipation>,selectedSurvey: freezed == selectedSurvey ? _self.selectedSurvey : selectedSurvey // ignore: cast_nullable_to_non_nullable
+as Survey?,selectedParticipation: freezed == selectedParticipation ? _self.selectedParticipation : selectedParticipation // ignore: cast_nullable_to_non_nullable
+as SurveyParticipation?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -303,6 +327,18 @@ $SurveyCopyWith<$Res>? get selectedSurvey {
 
   return $SurveyCopyWith<$Res>(_self.selectedSurvey!, (value) {
     return _then(_self.copyWith(selectedSurvey: value));
+  });
+}/// Create a copy of SurveyState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SurveyParticipationCopyWith<$Res>? get selectedParticipation {
+    if (_self.selectedParticipation == null) {
+    return null;
+  }
+
+  return $SurveyParticipationCopyWith<$Res>(_self.selectedParticipation!, (value) {
+    return _then(_self.copyWith(selectedParticipation: value));
   });
 }
 }

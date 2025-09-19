@@ -24,13 +24,14 @@ Map<String, dynamic> _$SurveyAnswerToJson(_SurveyAnswer instance) =>
 
 _SurveyParticipation _$SurveyParticipationFromJson(Map<String, dynamic> json) =>
     _SurveyParticipation(
-      id: (json['id_participacion'] as num?)?.toInt(),
+      id: (json['id_participacion'] as num).toInt(),
       encuestaId: (json['encuesta_id'] as num).toInt(),
       usuarioId: (json['usuario_id'] as num).toInt(),
       fechaParticipacion: DateTime.parse(json['fecha_participacion'] as String),
+      completada: json['completada'] as bool,
       respuestas:
           (json['respuestas'] as List<dynamic>?)
-              ?.map((e) => SurveyAnswer.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => RespuestaUsuario.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
     );
@@ -42,5 +43,6 @@ Map<String, dynamic> _$SurveyParticipationToJson(
   'encuesta_id': instance.encuestaId,
   'usuario_id': instance.usuarioId,
   'fecha_participacion': instance.fechaParticipacion.toIso8601String(),
+  'completada': instance.completada,
   'respuestas': instance.respuestas,
 };

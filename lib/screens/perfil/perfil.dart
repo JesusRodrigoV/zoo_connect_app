@@ -219,6 +219,7 @@ class PerfilPage extends ConsumerWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
+                            color: Colors.white,
                           ),
                         ),
                       ),

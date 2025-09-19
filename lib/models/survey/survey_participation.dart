@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:zoo_connect_app/models/survey/respuesta_usuario.dart';
 
 part 'survey_participation.freezed.dart';
 part 'survey_participation.g.dart';
@@ -19,11 +20,12 @@ abstract class SurveyAnswer with _$SurveyAnswer {
 @freezed
 abstract class SurveyParticipation with _$SurveyParticipation {
   const factory SurveyParticipation({
-    @JsonKey(name: 'id_participacion') int? id,
+    @JsonKey(name: 'id_participacion') required int id,
     @JsonKey(name: 'encuesta_id') required int encuestaId,
     @JsonKey(name: 'usuario_id') required int usuarioId,
     @JsonKey(name: 'fecha_participacion') required DateTime fechaParticipacion,
-    @Default([]) List<SurveyAnswer> respuestas,
+    @JsonKey(name: 'completada') required bool completada,
+    @Default([]) List<RespuestaUsuario> respuestas,
   }) = _SurveyParticipation;
 
   factory SurveyParticipation.fromJson(Map<String, dynamic> json) =>

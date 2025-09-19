@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:zoo_connect_app/models/survey/survey.dart';
 
 class EncuestaCard extends StatefulWidget {
-  final String titulo;
-  final String contenido;
+  final Survey encuesta;
 
-  const EncuestaCard({
-    super.key,
-    required this.titulo,
-    required this.contenido,
-  });
+  const EncuestaCard({super.key, required this.encuesta});
 
   @override
   State<EncuestaCard> createState() => _EncuestaCardState();
@@ -22,9 +18,12 @@ class _EncuestaCardState extends State<EncuestaCard> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(widget.titulo),
+            title: Text(widget.encuesta.titulo),
             content: SingleChildScrollView(
-              child: Text(widget.contenido, style: TextStyle(fontSize: 16)),
+              child: Text(
+                widget.encuesta.descripcion,
+                style: TextStyle(fontSize: 16),
+              ),
             ),
             actions: <Widget>[
               TextButton(
@@ -49,13 +48,13 @@ class _EncuestaCardState extends State<EncuestaCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.titulo,
+                  widget.encuesta.titulo,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 15),
                 Expanded(
                   child: Text(
-                    widget.contenido,
+                    widget.encuesta.descripcion,
                     style: TextStyle(fontSize: 16),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
@@ -66,7 +65,11 @@ class _EncuestaCardState extends State<EncuestaCard> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(
+                      context,
+                      '/surveys/participate',
+                      arguments: widget.encuesta.id,
+                    ),
                     child: Text(
                       "Participar",
                       style: TextStyle(fontWeight: FontWeight.bold),

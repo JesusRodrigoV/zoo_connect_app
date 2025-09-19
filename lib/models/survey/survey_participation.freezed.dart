@@ -287,7 +287,7 @@ as String?,
 /// @nodoc
 mixin _$SurveyParticipation {
 
-@JsonKey(name: 'id_participacion') int? get id;@JsonKey(name: 'encuesta_id') int get encuestaId;@JsonKey(name: 'usuario_id') int get usuarioId;@JsonKey(name: 'fecha_participacion') DateTime get fechaParticipacion; List<SurveyAnswer> get respuestas;
+@JsonKey(name: 'id_participacion') int get id;@JsonKey(name: 'encuesta_id') int get encuestaId;@JsonKey(name: 'usuario_id') int get usuarioId;@JsonKey(name: 'fecha_participacion') DateTime get fechaParticipacion;@JsonKey(name: 'completada') bool get completada; List<RespuestaUsuario> get respuestas;
 /// Create a copy of SurveyParticipation
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -300,16 +300,16 @@ $SurveyParticipationCopyWith<SurveyParticipation> get copyWith => _$SurveyPartic
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.encuestaId, encuestaId) || other.encuestaId == encuestaId)&&(identical(other.usuarioId, usuarioId) || other.usuarioId == usuarioId)&&(identical(other.fechaParticipacion, fechaParticipacion) || other.fechaParticipacion == fechaParticipacion)&&const DeepCollectionEquality().equals(other.respuestas, respuestas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.encuestaId, encuestaId) || other.encuestaId == encuestaId)&&(identical(other.usuarioId, usuarioId) || other.usuarioId == usuarioId)&&(identical(other.fechaParticipacion, fechaParticipacion) || other.fechaParticipacion == fechaParticipacion)&&(identical(other.completada, completada) || other.completada == completada)&&const DeepCollectionEquality().equals(other.respuestas, respuestas));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,encuestaId,usuarioId,fechaParticipacion,const DeepCollectionEquality().hash(respuestas));
+int get hashCode => Object.hash(runtimeType,id,encuestaId,usuarioId,fechaParticipacion,completada,const DeepCollectionEquality().hash(respuestas));
 
 @override
 String toString() {
-  return 'SurveyParticipation(id: $id, encuestaId: $encuestaId, usuarioId: $usuarioId, fechaParticipacion: $fechaParticipacion, respuestas: $respuestas)';
+  return 'SurveyParticipation(id: $id, encuestaId: $encuestaId, usuarioId: $usuarioId, fechaParticipacion: $fechaParticipacion, completada: $completada, respuestas: $respuestas)';
 }
 
 
@@ -320,7 +320,7 @@ abstract mixin class $SurveyParticipationCopyWith<$Res>  {
   factory $SurveyParticipationCopyWith(SurveyParticipation value, $Res Function(SurveyParticipation) _then) = _$SurveyParticipationCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id_participacion') int? id,@JsonKey(name: 'encuesta_id') int encuestaId,@JsonKey(name: 'usuario_id') int usuarioId,@JsonKey(name: 'fecha_participacion') DateTime fechaParticipacion, List<SurveyAnswer> respuestas
+@JsonKey(name: 'id_participacion') int id,@JsonKey(name: 'encuesta_id') int encuestaId,@JsonKey(name: 'usuario_id') int usuarioId,@JsonKey(name: 'fecha_participacion') DateTime fechaParticipacion,@JsonKey(name: 'completada') bool completada, List<RespuestaUsuario> respuestas
 });
 
 
@@ -337,14 +337,15 @@ class _$SurveyParticipationCopyWithImpl<$Res>
 
 /// Create a copy of SurveyParticipation
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? encuestaId = null,Object? usuarioId = null,Object? fechaParticipacion = null,Object? respuestas = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? encuestaId = null,Object? usuarioId = null,Object? fechaParticipacion = null,Object? completada = null,Object? respuestas = null,}) {
   return _then(_self.copyWith(
-id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int?,encuestaId: null == encuestaId ? _self.encuestaId : encuestaId // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,encuestaId: null == encuestaId ? _self.encuestaId : encuestaId // ignore: cast_nullable_to_non_nullable
 as int,usuarioId: null == usuarioId ? _self.usuarioId : usuarioId // ignore: cast_nullable_to_non_nullable
 as int,fechaParticipacion: null == fechaParticipacion ? _self.fechaParticipacion : fechaParticipacion // ignore: cast_nullable_to_non_nullable
-as DateTime,respuestas: null == respuestas ? _self.respuestas : respuestas // ignore: cast_nullable_to_non_nullable
-as List<SurveyAnswer>,
+as DateTime,completada: null == completada ? _self.completada : completada // ignore: cast_nullable_to_non_nullable
+as bool,respuestas: null == respuestas ? _self.respuestas : respuestas // ignore: cast_nullable_to_non_nullable
+as List<RespuestaUsuario>,
   ));
 }
 
@@ -429,10 +430,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_participacion')  int? id, @JsonKey(name: 'encuesta_id')  int encuestaId, @JsonKey(name: 'usuario_id')  int usuarioId, @JsonKey(name: 'fecha_participacion')  DateTime fechaParticipacion,  List<SurveyAnswer> respuestas)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_participacion')  int id, @JsonKey(name: 'encuesta_id')  int encuestaId, @JsonKey(name: 'usuario_id')  int usuarioId, @JsonKey(name: 'fecha_participacion')  DateTime fechaParticipacion, @JsonKey(name: 'completada')  bool completada,  List<RespuestaUsuario> respuestas)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SurveyParticipation() when $default != null:
-return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipacion,_that.respuestas);case _:
+return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipacion,_that.completada,_that.respuestas);case _:
   return orElse();
 
 }
@@ -450,10 +451,10 @@ return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipaci
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_participacion')  int? id, @JsonKey(name: 'encuesta_id')  int encuestaId, @JsonKey(name: 'usuario_id')  int usuarioId, @JsonKey(name: 'fecha_participacion')  DateTime fechaParticipacion,  List<SurveyAnswer> respuestas)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_participacion')  int id, @JsonKey(name: 'encuesta_id')  int encuestaId, @JsonKey(name: 'usuario_id')  int usuarioId, @JsonKey(name: 'fecha_participacion')  DateTime fechaParticipacion, @JsonKey(name: 'completada')  bool completada,  List<RespuestaUsuario> respuestas)  $default,) {final _that = this;
 switch (_that) {
 case _SurveyParticipation():
-return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipacion,_that.respuestas);case _:
+return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipacion,_that.completada,_that.respuestas);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -470,10 +471,10 @@ return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipaci
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id_participacion')  int? id, @JsonKey(name: 'encuesta_id')  int encuestaId, @JsonKey(name: 'usuario_id')  int usuarioId, @JsonKey(name: 'fecha_participacion')  DateTime fechaParticipacion,  List<SurveyAnswer> respuestas)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id_participacion')  int id, @JsonKey(name: 'encuesta_id')  int encuestaId, @JsonKey(name: 'usuario_id')  int usuarioId, @JsonKey(name: 'fecha_participacion')  DateTime fechaParticipacion, @JsonKey(name: 'completada')  bool completada,  List<RespuestaUsuario> respuestas)?  $default,) {final _that = this;
 switch (_that) {
 case _SurveyParticipation() when $default != null:
-return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipacion,_that.respuestas);case _:
+return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipacion,_that.completada,_that.respuestas);case _:
   return null;
 
 }
@@ -485,15 +486,16 @@ return $default(_that.id,_that.encuestaId,_that.usuarioId,_that.fechaParticipaci
 @JsonSerializable()
 
 class _SurveyParticipation implements SurveyParticipation {
-  const _SurveyParticipation({@JsonKey(name: 'id_participacion') this.id, @JsonKey(name: 'encuesta_id') required this.encuestaId, @JsonKey(name: 'usuario_id') required this.usuarioId, @JsonKey(name: 'fecha_participacion') required this.fechaParticipacion, final  List<SurveyAnswer> respuestas = const []}): _respuestas = respuestas;
+  const _SurveyParticipation({@JsonKey(name: 'id_participacion') required this.id, @JsonKey(name: 'encuesta_id') required this.encuestaId, @JsonKey(name: 'usuario_id') required this.usuarioId, @JsonKey(name: 'fecha_participacion') required this.fechaParticipacion, @JsonKey(name: 'completada') required this.completada, final  List<RespuestaUsuario> respuestas = const []}): _respuestas = respuestas;
   factory _SurveyParticipation.fromJson(Map<String, dynamic> json) => _$SurveyParticipationFromJson(json);
 
-@override@JsonKey(name: 'id_participacion') final  int? id;
+@override@JsonKey(name: 'id_participacion') final  int id;
 @override@JsonKey(name: 'encuesta_id') final  int encuestaId;
 @override@JsonKey(name: 'usuario_id') final  int usuarioId;
 @override@JsonKey(name: 'fecha_participacion') final  DateTime fechaParticipacion;
- final  List<SurveyAnswer> _respuestas;
-@override@JsonKey() List<SurveyAnswer> get respuestas {
+@override@JsonKey(name: 'completada') final  bool completada;
+ final  List<RespuestaUsuario> _respuestas;
+@override@JsonKey() List<RespuestaUsuario> get respuestas {
   if (_respuestas is EqualUnmodifiableListView) return _respuestas;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_respuestas);
@@ -513,16 +515,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.encuestaId, encuestaId) || other.encuestaId == encuestaId)&&(identical(other.usuarioId, usuarioId) || other.usuarioId == usuarioId)&&(identical(other.fechaParticipacion, fechaParticipacion) || other.fechaParticipacion == fechaParticipacion)&&const DeepCollectionEquality().equals(other._respuestas, _respuestas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.encuestaId, encuestaId) || other.encuestaId == encuestaId)&&(identical(other.usuarioId, usuarioId) || other.usuarioId == usuarioId)&&(identical(other.fechaParticipacion, fechaParticipacion) || other.fechaParticipacion == fechaParticipacion)&&(identical(other.completada, completada) || other.completada == completada)&&const DeepCollectionEquality().equals(other._respuestas, _respuestas));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,encuestaId,usuarioId,fechaParticipacion,const DeepCollectionEquality().hash(_respuestas));
+int get hashCode => Object.hash(runtimeType,id,encuestaId,usuarioId,fechaParticipacion,completada,const DeepCollectionEquality().hash(_respuestas));
 
 @override
 String toString() {
-  return 'SurveyParticipation(id: $id, encuestaId: $encuestaId, usuarioId: $usuarioId, fechaParticipacion: $fechaParticipacion, respuestas: $respuestas)';
+  return 'SurveyParticipation(id: $id, encuestaId: $encuestaId, usuarioId: $usuarioId, fechaParticipacion: $fechaParticipacion, completada: $completada, respuestas: $respuestas)';
 }
 
 
@@ -533,7 +535,7 @@ abstract mixin class _$SurveyParticipationCopyWith<$Res> implements $SurveyParti
   factory _$SurveyParticipationCopyWith(_SurveyParticipation value, $Res Function(_SurveyParticipation) _then) = __$SurveyParticipationCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id_participacion') int? id,@JsonKey(name: 'encuesta_id') int encuestaId,@JsonKey(name: 'usuario_id') int usuarioId,@JsonKey(name: 'fecha_participacion') DateTime fechaParticipacion, List<SurveyAnswer> respuestas
+@JsonKey(name: 'id_participacion') int id,@JsonKey(name: 'encuesta_id') int encuestaId,@JsonKey(name: 'usuario_id') int usuarioId,@JsonKey(name: 'fecha_participacion') DateTime fechaParticipacion,@JsonKey(name: 'completada') bool completada, List<RespuestaUsuario> respuestas
 });
 
 
@@ -550,14 +552,15 @@ class __$SurveyParticipationCopyWithImpl<$Res>
 
 /// Create a copy of SurveyParticipation
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? encuestaId = null,Object? usuarioId = null,Object? fechaParticipacion = null,Object? respuestas = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? encuestaId = null,Object? usuarioId = null,Object? fechaParticipacion = null,Object? completada = null,Object? respuestas = null,}) {
   return _then(_SurveyParticipation(
-id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int?,encuestaId: null == encuestaId ? _self.encuestaId : encuestaId // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,encuestaId: null == encuestaId ? _self.encuestaId : encuestaId // ignore: cast_nullable_to_non_nullable
 as int,usuarioId: null == usuarioId ? _self.usuarioId : usuarioId // ignore: cast_nullable_to_non_nullable
 as int,fechaParticipacion: null == fechaParticipacion ? _self.fechaParticipacion : fechaParticipacion // ignore: cast_nullable_to_non_nullable
-as DateTime,respuestas: null == respuestas ? _self._respuestas : respuestas // ignore: cast_nullable_to_non_nullable
-as List<SurveyAnswer>,
+as DateTime,completada: null == completada ? _self.completada : completada // ignore: cast_nullable_to_non_nullable
+as bool,respuestas: null == respuestas ? _self._respuestas : respuestas // ignore: cast_nullable_to_non_nullable
+as List<RespuestaUsuario>,
   ));
 }
 

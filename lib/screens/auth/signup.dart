@@ -260,7 +260,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                         SizedBox(
                                           width: 20,
                                           height: 20,
-                                          child: CustomLoader(size: 100),
+                                          child: CustomLoader(size: 60),
                                         ),
                                       ],
                                     )

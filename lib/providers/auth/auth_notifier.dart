@@ -67,7 +67,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> _attemptTokenRefresh(String refreshToken) async {
+  Future<bool> _attemptTokenRefresh(String refreshToken) async {
     try {
       final response = await http.post(
         Uri.parse('$_authBaseUrl/refresh'),
@@ -92,14 +92,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
             accessToken: authResponse.accessToken,
             refreshToken: authResponse.refreshToken,
           );
-        } else {
-          await _clearStorageAndSetUnauthenticated();
+          return true;
         }
-      } else {
-        await _clearStorageAndSetUnauthenticated();
       }
+      await _clearStorageAndSetUnauthenticated();
+      return false;
     } catch (e) {
       await _clearStorageAndSetUnauthenticated();
+      return false;
     }
   }
 
@@ -179,6 +179,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       state = AuthState.error('Error al iniciar sesión: ${e.toString()}');
     }
+  }
+
+  Future<bool> refreshToken() async {
+    return await state.maybeWhen(
+      autenticado: (usuario, accessToken, refreshToken) async {
+        return await _attemptTokenRefresh(refreshToken);
+      },
+      orElse: () async => false,
+    );
   }
 
   Future<void> logout() async {

@@ -59,13 +59,15 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
   }
 
   void _addQuestion() {
+    String questionText = '';
+    String questionType = 'opcion_unica';
+    final options = <String>[];
+    bool isProcessing = false;
+
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
-        String questionText = '';
-        String questionType = 'opcion_unica';
-        final options = <String>[];
-
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
@@ -116,17 +118,27 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                       ),
                       TextButton.icon(
                         onPressed: () {
+                          final TextEditingController optionController =
+                              TextEditingController();
                           showDialog(
                             context: context,
                             builder: (context) {
-                              String optionText = '';
                               return AlertDialog(
                                 title: const Text('Nueva Opción'),
                                 content: TextField(
+                                  controller: optionController,
                                   decoration: const InputDecoration(
                                     labelText: 'Texto de la opción',
                                   ),
-                                  onChanged: (value) => optionText = value,
+                                  autofocus: true,
+                                  onSubmitted: (value) {
+                                    if (value.trim().isNotEmpty) {
+                                      setState(() {
+                                        options.add(value);
+                                      });
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
                                 ),
                                 actions: [
                                   TextButton(
@@ -137,9 +149,10 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                                   ),
                                   FilledButton(
                                     onPressed: () {
-                                      if (optionText.trim().isNotEmpty) {
+                                      final value = optionController.text;
+                                      if (value.trim().isNotEmpty) {
                                         setState(() {
-                                          options.add(optionText);
+                                          options.add(value);
                                         });
                                         Navigator.of(context).pop();
                                       }
@@ -149,7 +162,7 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                                 ],
                               );
                             },
-                          );
+                          ).then((_) => optionController.dispose());
                         },
                         icon: const Icon(Icons.add),
                         label: const Text('Agregar Opción'),
@@ -166,34 +179,63 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                   child: const Text('Cancelar'),
                 ),
                 FilledButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (questionText.trim().isEmpty ||
                         (questionType == 'opcion_unica' && options.isEmpty)) {
                       return;
                     }
 
-                    final surveyOptions = options
-                        .asMap()
-                        .entries
-                        .map(
-                          (e) => SurveyOption(text: e.value, orden: e.key + 1),
-                        )
-                        .toList();
+                    setState(() => isProcessing = true);
 
-                    final question = SurveyQuestion(
-                      text: questionText,
-                      type: questionType,
-                      orden: _questions.length + 1,
-                      opciones: surveyOptions,
-                    );
+                    try {
+                      final surveyOptions = options
+                          .asMap()
+                          .entries
+                          .map(
+                            (e) =>
+                                SurveyOption(text: e.value, orden: e.key + 1),
+                          )
+                          .toList();
 
-                    setState(() {
-                      _questions.add(question);
-                    });
+                      final question = SurveyQuestion(
+                        text: questionText,
+                        esOpcionUnica: questionType == 'opcion_unica',
+                        orden: _questions.length + 1,
+                        opciones: surveyOptions,
+                      );
 
-                    Navigator.of(context).pop();
+                      await Future.delayed(const Duration(milliseconds: 100));
+
+                      if (!context.mounted) return;
+
+                      Navigator.of(context).pop();
+
+                      setState(() {
+                        _questions.add(question);
+                      });
+                    } finally {
+                      if (context.mounted) {
+                        setState(() => isProcessing = false);
+                      }
+                    }
                   },
-                  child: const Text('Guardar'),
+                  child: Builder(
+                    builder: (context) {
+                      if (isProcessing) {
+                        return const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        );
+                      }
+                      return const Text('Guardar');
+                    },
+                  ),
                 ),
               ],
             );
@@ -203,15 +245,41 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
     );
   }
 
-  Future<void> _saveSurvey() async {
+  Future<void> _saveSurvey(BuildContext context) async {
+    final colors = Theme.of(context).colorScheme;
+
     if (_titleController.text.trim().isEmpty ||
         _descriptionController.text.trim().isEmpty ||
         _questions.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor complete todos los campos')),
+        const SnackBar(
+          content: Text('Por favor complete todos los campos'),
+          backgroundColor: Colors.orange,
+        ),
       );
       return;
     }
+
+    // Mostrar diálogo de carga
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Guardando encuesta...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
 
     final survey = Survey(
       titulo: _titleController.text,
@@ -224,15 +292,60 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
 
     try {
       await ref.read(surveyProvider.notifier).createSurvey(survey);
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+
+      if (!mounted) return;
+
+      // Cerrar el diálogo de carga
+      Navigator.of(context).pop();
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 8),
+              Text(
+                'Encuesta creada exitosamente',
+                style: TextStyle(color: colors.onPrimaryContainer),
+              ),
+            ],
+          ),
+          backgroundColor: colors.primaryContainer,
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      // Regresar a la pantalla anterior
+      Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
+      if (!mounted) return;
+
+      // Cerrar el diálogo de carga
+      Navigator.of(context).pop();
+
+      // Mostrar mensaje de error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(child: Text('Error al crear la encuesta: $e')),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'OK',
+            textColor: Colors.white,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -296,7 +409,7 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                 child: ListTile(
                   title: Text(question.text),
                   subtitle: Text(
-                    question.type == 'opcion_unica'
+                    question.esOpcionUnica
                         ? '${question.opciones.length} opciones'
                         : 'Respuesta de texto',
                   ),
@@ -305,7 +418,6 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
                     onPressed: () {
                       setState(() {
                         _questions.remove(question);
-                        // Actualizar el orden de las preguntas restantes
                         for (var i = 0; i < _questions.length; i++) {
                           _questions[i] = _questions[i].copyWith(orden: i + 1);
                         }
@@ -323,7 +435,7 @@ class _CreateSurveyPageState extends ConsumerState<CreateSurveyPage> {
             ),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: _questions.isEmpty ? null : _saveSurvey,
+              onPressed: _questions.isEmpty ? null : () => _saveSurvey(context),
               child: const Text('Guardar Encuesta'),
             ),
           ],

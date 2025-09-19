@@ -10,8 +10,8 @@ _SurveyQuestion _$SurveyQuestionFromJson(Map<String, dynamic> json) =>
     _SurveyQuestion(
       id: (json['id_pregunta'] as num?)?.toInt(),
       text: json['texto_pregunta'] as String,
-      type: json['tipo_pregunta'] as String,
-      orden: (json['orden'] as num).toInt(),
+      esOpcionUnica: json['es_opcion_unica'] as bool,
+      orden: (json['orden'] as num?)?.toInt(),
       opciones:
           (json['opciones'] as List<dynamic>?)
               ?.map((e) => SurveyOption.fromJson(e as Map<String, dynamic>))
@@ -23,7 +23,7 @@ Map<String, dynamic> _$SurveyQuestionToJson(_SurveyQuestion instance) =>
     <String, dynamic>{
       'id_pregunta': instance.id,
       'texto_pregunta': instance.text,
-      'tipo_pregunta': instance.type,
+      'es_opcion_unica': instance.esOpcionUnica,
       'orden': instance.orden,
       'opciones': instance.opciones,
     };

@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zoo_connect_app/providers/survey/survey_provider.dart';
 import 'package:zoo_connect_app/widgets/home/animal_dia.dart';
 import 'package:zoo_connect_app/widgets/home/encuesta_card.dart';
 import 'package:zoo_connect_app/widgets/home/quiz_card.dart';
 import 'package:zoo_connect_app/widgets/profile/profile_icon_button.dart';
 import 'package:zoo_connect_app/widgets/shared/user_widgets.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref.read(surveyProvider.notifier).loadSurveys());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final surveyState = ref.watch(surveyProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text("ZooConnet"),
@@ -33,23 +47,61 @@ class HomePage extends StatelessWidget {
             children: [
               AnimalDia(),
               const SizedBox(height: 10),
-              SizedBox(
-                height: 250,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    EncuestaCard(
-                      titulo: "Nuevo habitat",
-                      contenido:
-                          "Ayudanos a hacer esto no se que no se aqui no se alla, mas pruebas mas texto largo para ver si soporta",
-                    ),
-                    EncuestaCard(
-                      titulo: "Nombre para algo",
-                      contenido: "Elige nombre para el nuevo lion ",
-                    ),
-                  ],
+              Text(
+                'Encuestas Disponibles',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.1,
                 ),
               ),
+              SizedBox(height: 10),
+              if (surveyState.isLoading)
+                const SizedBox(
+                  height: 250,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (surveyState.error != null)
+                SizedBox(
+                  height: 250,
+                  child: Center(
+                    child: Text(
+                      'Error al cargar encuestas: ${surveyState.error}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                )
+              else if (surveyState.surveys.isEmpty)
+                const SizedBox(
+                  height: 250,
+                  child: Center(
+                    child: Text(
+                      'No hay encuestas disponibles',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: surveyState.surveys.length,
+                    itemBuilder: (context, index) {
+                      final survey = surveyState.surveys[index];
+                      final now = DateTime.now();
+                      if (!survey.isActive ||
+                          now.isBefore(survey.fechaInicio) ||
+                          now.isAfter(survey.fechaFin)) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: EncuestaCard(encuesta: survey),
+                      );
+                    },
+                  ),
+                ),
               SizedBox(height: 10),
               QuizCard(),
             ],

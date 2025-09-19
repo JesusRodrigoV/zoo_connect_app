@@ -98,4 +98,44 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
+
+  // Cargar todas las participaciones del usuario
+  Future<void> loadUserParticipations() async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final participations = await _repository.getUserParticipations();
+      state = state.copyWith(participations: participations, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+    }
+  }
+
+  // Cargar los detalles de una participación específica
+  Future<void> loadParticipationDetails(String participationId) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final participation = await _repository.getParticipationDetails(
+        int.parse(participationId),
+      );
+      state = state.copyWith(
+        selectedParticipation: participation,
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+    }
+  }
+
+  // Cargar estadísticas de una encuesta
+  Future<Map<String, dynamic>> loadSurveyStats(String surveyId) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final stats = await _repository.getSurveyStats(int.parse(surveyId));
+      state = state.copyWith(isLoading: false);
+      return stats;
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+      rethrow;
+    }
+  }
 }

@@ -7,6 +7,7 @@ import 'package:zoo_connect_app/screens/survey/create_survey.dart';
 import 'package:zoo_connect_app/screens/survey/survey_list.dart';
 import 'package:zoo_connect_app/screens/survey/survey_participation.dart';
 import 'package:zoo_connect_app/screens/admin/admin_panel.dart';
+import 'package:zoo_connect_app/screens/survey/survey_stats.dart';
 import 'package:zoo_connect_app/widgets/auth/protected_route.dart';
 
 class AppRouter {
@@ -76,6 +77,15 @@ class AppRouter {
             requiresAuth: true,
             requiresAdmin: false,
             child: SurveyParticipationPage(surveyId: surveyId),
+          ),
+        );
+
+      case '/surveys/stats':
+        return MaterialPageRoute(
+          builder: (_) => const ProtectedRoute(
+            requiresAuth: true,
+            requiresAdmin: true,
+            child: SurveyStatsPage(),
           ),
         );
 

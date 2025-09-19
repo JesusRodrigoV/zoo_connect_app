@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Survey {
 
-@JsonKey(name: 'id_encuesta') int? get id;@JsonKey(name: 'titulo') String get titulo;@JsonKey(name: 'descripcion') String get descripcion;@JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() DateTime get fechaInicio;@JsonKey(name: 'fecha_fin')@ISODateTimeConverter() DateTime get fechaFin;@JsonKey(name: 'activa', defaultValue: true) bool get isActive;@JsonKey(name: 'preguntas') List<SurveyQuestion> get preguntas;
+@JsonKey(name: 'id_encuesta') int? get id;@JsonKey(name: 'titulo') String get titulo;@JsonKey(name: 'descripcion') String get descripcion;@JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() DateTime get fechaInicio;@JsonKey(name: 'fecha_fin')@ISODateTimeConverter() DateTime get fechaFin;@JsonKey(name: 'is_active', defaultValue: true) bool get isActive;@JsonKey(name: 'preguntas') List<SurveyQuestion> get preguntas;
 /// Create a copy of Survey
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $SurveyCopyWith<$Res>  {
   factory $SurveyCopyWith(Survey value, $Res Function(Survey) _then) = _$SurveyCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id_encuesta') int? id,@JsonKey(name: 'titulo') String titulo,@JsonKey(name: 'descripcion') String descripcion,@JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() DateTime fechaInicio,@JsonKey(name: 'fecha_fin')@ISODateTimeConverter() DateTime fechaFin,@JsonKey(name: 'activa', defaultValue: true) bool isActive,@JsonKey(name: 'preguntas') List<SurveyQuestion> preguntas
+@JsonKey(name: 'id_encuesta') int? id,@JsonKey(name: 'titulo') String titulo,@JsonKey(name: 'descripcion') String descripcion,@JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() DateTime fechaInicio,@JsonKey(name: 'fecha_fin')@ISODateTimeConverter() DateTime fechaFin,@JsonKey(name: 'is_active', defaultValue: true) bool isActive,@JsonKey(name: 'preguntas') List<SurveyQuestion> preguntas
 });
 
 
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_encuesta')  int? id, @JsonKey(name: 'titulo')  String titulo, @JsonKey(name: 'descripcion')  String descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter()  DateTime fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter()  DateTime fechaFin, @JsonKey(name: 'activa', defaultValue: true)  bool isActive, @JsonKey(name: 'preguntas')  List<SurveyQuestion> preguntas)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_encuesta')  int? id, @JsonKey(name: 'titulo')  String titulo, @JsonKey(name: 'descripcion')  String descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter()  DateTime fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter()  DateTime fechaFin, @JsonKey(name: 'is_active', defaultValue: true)  bool isActive, @JsonKey(name: 'preguntas')  List<SurveyQuestion> preguntas)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Survey() when $default != null:
 return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaInicio,_that.fechaFin,_that.isActive,_that.preguntas);case _:
@@ -180,7 +180,7 @@ return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaInicio,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_encuesta')  int? id, @JsonKey(name: 'titulo')  String titulo, @JsonKey(name: 'descripcion')  String descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter()  DateTime fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter()  DateTime fechaFin, @JsonKey(name: 'activa', defaultValue: true)  bool isActive, @JsonKey(name: 'preguntas')  List<SurveyQuestion> preguntas)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_encuesta')  int? id, @JsonKey(name: 'titulo')  String titulo, @JsonKey(name: 'descripcion')  String descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter()  DateTime fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter()  DateTime fechaFin, @JsonKey(name: 'is_active', defaultValue: true)  bool isActive, @JsonKey(name: 'preguntas')  List<SurveyQuestion> preguntas)  $default,) {final _that = this;
 switch (_that) {
 case _Survey():
 return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaInicio,_that.fechaFin,_that.isActive,_that.preguntas);case _:
@@ -200,7 +200,7 @@ return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaInicio,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id_encuesta')  int? id, @JsonKey(name: 'titulo')  String titulo, @JsonKey(name: 'descripcion')  String descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter()  DateTime fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter()  DateTime fechaFin, @JsonKey(name: 'activa', defaultValue: true)  bool isActive, @JsonKey(name: 'preguntas')  List<SurveyQuestion> preguntas)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id_encuesta')  int? id, @JsonKey(name: 'titulo')  String titulo, @JsonKey(name: 'descripcion')  String descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter()  DateTime fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter()  DateTime fechaFin, @JsonKey(name: 'is_active', defaultValue: true)  bool isActive, @JsonKey(name: 'preguntas')  List<SurveyQuestion> preguntas)?  $default,) {final _that = this;
 switch (_that) {
 case _Survey() when $default != null:
 return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaInicio,_that.fechaFin,_that.isActive,_that.preguntas);case _:
@@ -215,7 +215,7 @@ return $default(_that.id,_that.titulo,_that.descripcion,_that.fechaInicio,_that.
 @JsonSerializable()
 
 class _Survey implements Survey {
-  const _Survey({@JsonKey(name: 'id_encuesta') this.id, @JsonKey(name: 'titulo') required this.titulo, @JsonKey(name: 'descripcion') required this.descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() required this.fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter() required this.fechaFin, @JsonKey(name: 'activa', defaultValue: true) required this.isActive, @JsonKey(name: 'preguntas') final  List<SurveyQuestion> preguntas = const []}): _preguntas = preguntas;
+  const _Survey({@JsonKey(name: 'id_encuesta') this.id, @JsonKey(name: 'titulo') required this.titulo, @JsonKey(name: 'descripcion') required this.descripcion, @JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() required this.fechaInicio, @JsonKey(name: 'fecha_fin')@ISODateTimeConverter() required this.fechaFin, @JsonKey(name: 'is_active', defaultValue: true) required this.isActive, @JsonKey(name: 'preguntas') final  List<SurveyQuestion> preguntas = const []}): _preguntas = preguntas;
   factory _Survey.fromJson(Map<String, dynamic> json) => _$SurveyFromJson(json);
 
 @override@JsonKey(name: 'id_encuesta') final  int? id;
@@ -223,7 +223,7 @@ class _Survey implements Survey {
 @override@JsonKey(name: 'descripcion') final  String descripcion;
 @override@JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() final  DateTime fechaInicio;
 @override@JsonKey(name: 'fecha_fin')@ISODateTimeConverter() final  DateTime fechaFin;
-@override@JsonKey(name: 'activa', defaultValue: true) final  bool isActive;
+@override@JsonKey(name: 'is_active', defaultValue: true) final  bool isActive;
  final  List<SurveyQuestion> _preguntas;
 @override@JsonKey(name: 'preguntas') List<SurveyQuestion> get preguntas {
   if (_preguntas is EqualUnmodifiableListView) return _preguntas;
@@ -265,7 +265,7 @@ abstract mixin class _$SurveyCopyWith<$Res> implements $SurveyCopyWith<$Res> {
   factory _$SurveyCopyWith(_Survey value, $Res Function(_Survey) _then) = __$SurveyCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id_encuesta') int? id,@JsonKey(name: 'titulo') String titulo,@JsonKey(name: 'descripcion') String descripcion,@JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() DateTime fechaInicio,@JsonKey(name: 'fecha_fin')@ISODateTimeConverter() DateTime fechaFin,@JsonKey(name: 'activa', defaultValue: true) bool isActive,@JsonKey(name: 'preguntas') List<SurveyQuestion> preguntas
+@JsonKey(name: 'id_encuesta') int? id,@JsonKey(name: 'titulo') String titulo,@JsonKey(name: 'descripcion') String descripcion,@JsonKey(name: 'fecha_inicio')@ISODateTimeConverter() DateTime fechaInicio,@JsonKey(name: 'fecha_fin')@ISODateTimeConverter() DateTime fechaFin,@JsonKey(name: 'is_active', defaultValue: true) bool isActive,@JsonKey(name: 'preguntas') List<SurveyQuestion> preguntas
 });
 
 

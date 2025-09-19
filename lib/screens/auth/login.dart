@@ -57,9 +57,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       next.whenOrNull(
         autenticado: (_, __, ___) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('¡Bienvenido!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: Text(
+                '¡Bienvenido!',
+                style: TextStyle(color: colors.onPrimaryContainer),
+              ),
+              backgroundColor: colors.primaryContainer,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -69,7 +72,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
-              backgroundColor: Colors.red.shade300,
+              backgroundColor: colors.error,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -177,7 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       }
                                     },
                               child: isLoading
-                                  ? CustomLoader(size: 50)
+                                  ? CustomLoader(size: 60)
                                   : const Text("Iniciar Sesión"),
                             ),
                           ),

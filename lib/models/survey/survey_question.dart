@@ -9,8 +9,8 @@ abstract class SurveyQuestion with _$SurveyQuestion {
   const factory SurveyQuestion({
     @JsonKey(name: 'id_pregunta') int? id,
     @JsonKey(name: 'texto_pregunta') required String text,
-    @JsonKey(name: 'tipo_pregunta') required String type,
-    required int orden,
+    @JsonKey(name: 'es_opcion_unica') required bool esOpcionUnica,
+    int? orden,
     @Default([]) List<SurveyOption> opciones,
   }) = _SurveyQuestion;
 
