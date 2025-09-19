@@ -1,42 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zoo_connect_app/models/auth/rol.dart';
 import 'package:zoo_connect_app/models/auth/usuario.dart';
 import 'package:zoo_connect_app/screens/settings/settings.dart';
+import 'package:zoo_connect_app/widgets/dialogs/logout_dialog.dart';
 
-class PerfilPage extends StatelessWidget {
+class PerfilPage extends ConsumerWidget {
   final Usuario usuario;
 
   const PerfilPage({super.key, required this.usuario});
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
+  String calcularTiempoMiembro(DateTime fechaCreacion, Rol rol) {
     final ahora = DateTime.now();
 
-    final diferencia = ahora.difference(usuario.createdAt);
+    if (fechaCreacion.isAfter(ahora)) {
+      return rol.id != 2 ? '${rol.nombre} nuevo' : 'Miembro nuevo';
+    }
 
-    String textoFecha;
-    if (diferencia.inDays < 30) {
-      textoFecha = 'Miembro nuevo';
-    } else if (diferencia.inDays < 365) {
-      final meses = (diferencia.inDays / 30).floor();
-      textoFecha = 'Miembro desde hace $meses mes${meses > 1 ? 'es' : ''}';
+    final diferencia = ahora.difference(fechaCreacion);
+    final dias = diferencia.inDays;
+
+    String pluralizar(int numero, String singular, String plural) {
+      return '$numero ${numero == 1 ? singular : plural}';
+    }
+
+    String tiempoBase;
+    if (dias < 30) {
+      tiempoBase = 'nuevo';
+    } else if (dias < 365) {
+      final meses = (dias / 30).floor();
+      tiempoBase = 'desde hace ${pluralizar(meses, "mes", "meses")}';
     } else {
-      final anios = (diferencia.inDays / 365).floor();
-      textoFecha = 'Miembro desde hace $anios año${anios > 1 ? 's' : ''}';
+      final anos = (dias / 365).floor();
+      tiempoBase = 'desde hace ${pluralizar(anos, "año", "años")}';
     }
 
-    if (usuario.rol.id != 1) {
-      final anios = (diferencia.inDays / 365).floor();
-      textoFecha =
-          '${usuario.rol.name} desde hace $anios año${anios > 1 ? 's' : ''}';
-      if (diferencia.inDays < 365) {
-        final meses = (diferencia.inDays / 30).floor();
-        textoFecha =
-            '${usuario.rol.name} desde hace $meses mes${meses > 1 ? 'es' : ''}';
-      }
-    }
+    return rol.id != 2 ? '${rol.nombre} $tiempoBase' : 'Miembro $tiempoBase';
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    print(usuario.rol.id);
+    final textoFecha = calcularTiempoMiembro(usuario.createdAt, usuario.rol);
 
     return Scaffold(
       appBar: AppBar(
@@ -59,20 +66,7 @@ class PerfilPage extends StatelessWidget {
             tooltip: 'Cerrar Sesion',
             onPressed: () => showDialog(
               context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text("Cerrar Sesión"),
-                  content: const Text("¡Has cerrado sesión!"),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Aceptar"),
-                    ),
-                  ],
-                );
-              },
+              builder: (context) => const LogoutDialog(),
             ),
           ),
         ],
@@ -93,15 +87,15 @@ class PerfilPage extends StatelessWidget {
                   color: colors.primary.withAlpha(255),
                   width: 3,
                 ),
-                image: usuario.fotoUrl.isNotEmpty
+                image: usuario.fotoUrl != null
                     ? DecorationImage(
-                        image: NetworkImage(usuario.fotoUrl),
+                        image: NetworkImage(usuario.fotoUrl!),
                         fit: BoxFit.cover,
                       )
                     : null,
                 color: Colors.grey[300],
               ),
-              child: usuario.fotoUrl.isEmpty
+              child: usuario.fotoUrl == null
                   ? const Icon(Icons.person, size: 40, color: Colors.grey)
                   : null,
             ),
@@ -120,7 +114,7 @@ class PerfilPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      usuario.nombre,
+                      usuario.nombreUsuario,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -216,7 +210,10 @@ class PerfilPage extends StatelessWidget {
                         style: FilledButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
-                        onPressed: () {},
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => const LogoutDialog(),
+                        ),
                         child: Text(
                           "Cerrar Sesión",
                           style: TextStyle(

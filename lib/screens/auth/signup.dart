@@ -1,15 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zoo_connect_app/models/auth/auth_state.dart';
 import 'package:zoo_connect_app/models/auth/validators.dart';
+import 'package:zoo_connect_app/providers/auth/auth_provider.dart';
+import 'package:zoo_connect_app/widgets/shared/custom_loader.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -55,24 +59,27 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-  // Lógica de validación instantánea
   void _validateInstant() {
     if (mounted) {
       _formKey.currentState?.validate();
     }
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      final authNotifier = ref.read(authProvider.notifier);
+      final email = _emailController.text;
+      final username = _nameController.text;
+      final password = _passwordController.text;
+
+      await authNotifier.register(email, username, password);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Formulario válido. Creando cuenta...'),
+        const SnackBar(
+          content: Text('Cuenta creada exitosamente!'),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
         ),
       );
+      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -89,6 +96,34 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final authState = ref.watch(authProvider);
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      next.whenOrNull(
+        autenticado: (usuario, accessToken, refreshToken) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('¡Registro exitoso! Redireccionando...'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          // Navigator.pushReplacementNamed(context, '/home');
+        },
+        error: (message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $message'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      );
+    });
+
+    final isLoading = authState.maybeWhen(
+      cargando: () => true,
+      orElse: () => false,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -216,8 +251,20 @@ class _SignupScreenState extends State<SignupScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: FilledButton(
-                              onPressed: _submitForm,
-                              child: Text("Iniciar Sesion"),
+                              onPressed: isLoading ? null : _submitForm,
+                              child: isLoading
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CustomLoader(size: 100),
+                                        ),
+                                      ],
+                                    )
+                                  : Text("Crear Cuenta"),
                             ),
                           ),
                         ],

@@ -7,20 +7,19 @@ part 'usuario.g.dart';
 @freezed
 abstract class Usuario with _$Usuario {
   const factory Usuario({
-    @JsonKey(name: 'Id_usuario') required int idUsuario,
-    @JsonKey(name: 'Nombre_usuario') required String nombre,
-    @JsonKey(name: 'Email') required String email,
-    @JsonKey(name: 'Password') required String password,
-    @JsonKey(name: 'Created_at') required DateTime createdAt,
-    @JsonKey(name: 'ROLES_Id_rol', fromJson: Rol.fromId, toJson: _rolToId)
-    required Rol rol,
-    @JsonKey(name: 'Foto_url') required String fotoUrl,
-    @JsonKey(name: 'Is_active') @Default(true) bool isActive,
-    @JsonKey(name: 'Updated_at') required DateTime updatedAt,
+    @JsonKey(name: 'id') required int idUsuario,
+    @JsonKey(name: 'email') required String email,
+    @JsonKey(name: 'username') required String nombreUsuario,
+    @JsonKey(name: 'photo_url') String? fotoUrl,
+    @JsonKey(name: 'is_active') required bool esActivo,
+    @JsonKey(name: 'role_id', fromJson: Rol.fromId) required Rol rol,
+    @JsonKey(name: 'created_at', fromJson: Usuario._dateFromString)
+    required DateTime createdAt,
   }) = _Usuario;
 
   factory Usuario.fromJson(Map<String, dynamic> json) =>
       _$UsuarioFromJson(json);
-}
 
-int _rolToId(Rol rol) => rol.id;
+  static DateTime _dateFromString(String date) =>
+      DateTime.parse(date).toLocal();
+}

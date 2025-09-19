@@ -1,11 +1,9 @@
+import 'package:zoo_connect_app/providers/auth/auth_provider.dart';
 import 'package:zoo_connect_app/providers/settings/theme_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:zoo_connect_app/screens/auth/bienvenida.dart';
-import 'package:zoo_connect_app/screens/auth/login.dart';
-import 'package:zoo_connect_app/screens/auth/signup.dart';
+import 'package:zoo_connect_app/config/router/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:zoo_connect_app/screens/home.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
@@ -19,11 +17,14 @@ class MainApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
 
+    final isAuthenticated = ref.watch(getEstaAutenticadoProvider);
+
     return MaterialApp(
       title: 'ZooConnect',
       theme: ThemeData(
         brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        useMaterial3: true,
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
@@ -31,15 +32,12 @@ class MainApp extends ConsumerWidget {
           seedColor: Colors.deepPurple,
           brightness: Brightness.dark,
         ),
+        useMaterial3: true,
       ),
       themeMode: themeMode,
-      home: Home(),
+      initialRoute: isAuthenticated ? '/' : '/bienvenida',
+      onGenerateRoute: AppRouter.generateRoute,
       debugShowCheckedModeBanner: false,
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
-        '/bienvenida': (context) => const BienvenidaScreen(),
-      },
     );
   }
 }

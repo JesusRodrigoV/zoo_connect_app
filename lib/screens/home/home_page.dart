@@ -3,6 +3,7 @@ import 'package:zoo_connect_app/widgets/home/animal_dia.dart';
 import 'package:zoo_connect_app/widgets/home/encuesta_card.dart';
 import 'package:zoo_connect_app/widgets/home/quiz_card.dart';
 import 'package:zoo_connect_app/widgets/profile/profile_icon_button.dart';
+import 'package:zoo_connect_app/widgets/shared/user_widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,17 +15,21 @@ class HomePage extends StatelessWidget {
         title: Text("ZooConnet"),
         centerTitle: true,
         actions: [
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/bienvenida'),
-            icon: Icon(Icons.abc),
+          AdminOnly(
+            child: IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/admin'),
+              icon: Icon(Icons.admin_panel_settings),
+              tooltip: 'Panel de Administración',
+            ),
           ),
-          IconButton.filledTonal(onPressed: () {}, icon: Icon(Icons.person)),
+          ProfileIconButton(),
         ],
       ),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(10),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               AnimalDia(),
               const SizedBox(height: 10),

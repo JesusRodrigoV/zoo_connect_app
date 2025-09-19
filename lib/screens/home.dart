@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:zoo_connect_app/models/auth/rol.dart';
-import 'package:zoo_connect_app/models/auth/usuario.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zoo_connect_app/providers/auth/auth_provider.dart';
 import 'package:zoo_connect_app/screens/home/home_page.dart';
 import 'package:zoo_connect_app/screens/quiz/quiz_bienvenida.dart';
 import 'package:zoo_connect_app/screens/perfil/perfil.dart';
 import 'package:zoo_connect_app/widgets/shared/navigation_bar.dart';
 
-class Home extends StatefulWidget {
+class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  ConsumerState<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends ConsumerState<Home> {
   int currentPageIndex = 0;
 
   Widget inicioPage() {
@@ -25,18 +25,12 @@ class _HomeState extends State<Home> {
   }
 
   Widget terceraPagina() {
-    return PerfilPage(
-      usuario: Usuario(
-        idUsuario: 1,
-        nombre: 'Nombre',
-        email: 'email@example.com',
-        password: 'password',
-        createdAt: DateTime(2012, 1, 1),
-        rol: Rol.administrador,
-        fotoUrl: '',
-        updatedAt: DateTime.now(),
-      ),
-    );
+    final usuario = ref.watch(getUsuarioActualProvider);
+
+    if (usuario == null) {
+      return const Center(child: Text('No has iniciado sesión'));
+    }
+    return PerfilPage(usuario: usuario);
   }
 
   void onNavigationDestinationSelected(int index) {

@@ -7,25 +7,28 @@ part of 'usuario.dart';
 // **************************************************************************
 
 _Usuario _$UsuarioFromJson(Map<String, dynamic> json) => _Usuario(
-  idUsuario: (json['Id_usuario'] as num).toInt(),
-  nombre: json['Nombre_usuario'] as String,
-  email: json['Email'] as String,
-  password: json['Password'] as String,
-  createdAt: DateTime.parse(json['Created_at'] as String),
-  rol: Rol.fromId((json['ROLES_Id_rol'] as num).toInt()),
-  fotoUrl: json['Foto_url'] as String,
-  isActive: json['Is_active'] as bool? ?? true,
-  updatedAt: DateTime.parse(json['Updated_at'] as String),
+  idUsuario: (json['id'] as num).toInt(),
+  email: json['email'] as String,
+  nombreUsuario: json['username'] as String,
+  fotoUrl: json['photo_url'] as String?,
+  esActivo: json['is_active'] as bool,
+  rol: Rol.fromId((json['role_id'] as num).toInt()),
+  createdAt: Usuario._dateFromString(json['created_at'] as String),
 );
 
 Map<String, dynamic> _$UsuarioToJson(_Usuario instance) => <String, dynamic>{
-  'Id_usuario': instance.idUsuario,
-  'Nombre_usuario': instance.nombre,
-  'Email': instance.email,
-  'Password': instance.password,
-  'Created_at': instance.createdAt.toIso8601String(),
-  'ROLES_Id_rol': _rolToId(instance.rol),
-  'Foto_url': instance.fotoUrl,
-  'Is_active': instance.isActive,
-  'Updated_at': instance.updatedAt.toIso8601String(),
+  'id': instance.idUsuario,
+  'email': instance.email,
+  'username': instance.nombreUsuario,
+  'photo_url': instance.fotoUrl,
+  'is_active': instance.esActivo,
+  'role_id': _$RolEnumMap[instance.rol]!,
+  'created_at': instance.createdAt.toIso8601String(),
+};
+
+const _$RolEnumMap = {
+  Rol.administrador: 'administrador',
+  Rol.visitante: 'visitante',
+  Rol.cuidador: 'cuidador',
+  Rol.veterinario: 'veterinario',
 };
