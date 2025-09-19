@@ -1,14 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zoo_connect_app/models/auth/rol.dart';
+import 'package:zoo_connect_app/models/auth/usuario.dart';
 import 'package:zoo_connect_app/screens/settings/settings.dart';
+import 'package:zoo_connect_app/widgets/dialogs/logout_dialog.dart';
 
-class PerfilPage extends StatelessWidget {
-  const PerfilPage({super.key});
+class PerfilPage extends ConsumerWidget {
+  final Usuario usuario;
+
+  const PerfilPage({super.key, required this.usuario});
+
+  String calcularTiempoMiembro(DateTime fechaCreacion, Rol rol) {
+    final ahora = DateTime.now();
+
+    if (fechaCreacion.isAfter(ahora)) {
+      return rol.id != 2 ? '${rol.nombre} nuevo' : 'Miembro nuevo';
+    }
+
+    final diferencia = ahora.difference(fechaCreacion);
+    final dias = diferencia.inDays;
+
+    String pluralizar(int numero, String singular, String plural) {
+      return '$numero ${numero == 1 ? singular : plural}';
+    }
+
+    String tiempoBase;
+    if (dias < 30) {
+      tiempoBase = 'nuevo';
+    } else if (dias < 365) {
+      final meses = (dias / 30).floor();
+      tiempoBase = 'desde hace ${pluralizar(meses, "mes", "meses")}';
+    } else {
+      final anos = (dias / 365).floor();
+      tiempoBase = 'desde hace ${pluralizar(anos, "año", "años")}';
+    }
+
+    return rol.id != 2 ? '${rol.nombre} $tiempoBase' : 'Miembro $tiempoBase';
+  }
 
   @override
-  Widget build(BuildContext context) {
-    final profileImageUrl = '';
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    print(usuario.rol.id);
+    final textoFecha = calcularTiempoMiembro(usuario.createdAt, usuario.rol);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,28 +58,16 @@ class PerfilPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => SettingsPage()),
             ),
             icon: Icon(Icons.settings),
+            tooltip: 'Ajustes',
           ),
           IconButton(
-            onPressed: () => showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                // El diálogo contendrá el Card
-                return AlertDialog(
-                  title: const Text("Cerrar Sesión"),
-                  content: const Text("¡Has cerrado sesión!"),
-                  actions: <Widget>[
-                    TextButton(
-                      child: const Text("Aceptar"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
             icon: Icon(Icons.logout_sharp),
             hoverColor: Colors.red.withAlpha(200),
+            tooltip: 'Cerrar Sesion',
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => const LogoutDialog(),
+            ),
           ),
         ],
         centerTitle: true,
@@ -64,15 +87,15 @@ class PerfilPage extends StatelessWidget {
                   color: colors.primary.withAlpha(255),
                   width: 3,
                 ),
-                image: profileImageUrl.isNotEmpty
+                image: usuario.fotoUrl != null
                     ? DecorationImage(
-                        image: NetworkImage(profileImageUrl),
+                        image: NetworkImage(usuario.fotoUrl!),
                         fit: BoxFit.cover,
                       )
                     : null,
                 color: Colors.grey[300],
               ),
-              child: profileImageUrl.isEmpty
+              child: usuario.fotoUrl == null
                   ? const Icon(Icons.person, size: 40, color: Colors.grey)
                   : null,
             ),
@@ -91,7 +114,7 @@ class PerfilPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Aqui va el nombre",
+                      usuario.nombreUsuario,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -101,18 +124,18 @@ class PerfilPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          color: colors.primary,
-                          size: 20,
-                        ),
+                        Icon(Icons.beenhere, color: colors.primary, size: 20),
                         const SizedBox(width: 8),
-                        Text(
-                          "Ubi",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: colors.onSurface,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              textoFecha,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: colors.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -120,9 +143,9 @@ class PerfilPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatItem("88", 'Portfolio', colors),
-                        _buildStatItem("45", 'Followers', colors),
-                        _buildStatItem("12", 'Following', colors),
+                        _buildStatItem("88", 'Quiz', colors),
+                        _buildStatItem("45", 'Puntos', colors),
+                        _buildStatItem("12", 'Encuestas', colors),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -180,6 +203,26 @@ class PerfilPage extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => const LogoutDialog(),
+                        ),
+                        child: Text(
+                          "Cerrar Sesión",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

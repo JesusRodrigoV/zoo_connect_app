@@ -1,23 +1,26 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zoo_connect_app/models/auth/auth_state.dart';
 import 'package:zoo_connect_app/models/auth/validators.dart';
+import 'package:zoo_connect_app/providers/auth/auth_provider.dart';
+import 'package:zoo_connect_app/widgets/shared/custom_loader.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   Timer? _debounce;
-
   bool _obscureTextPass = true;
 
   @override
@@ -48,13 +51,44 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final authState = ref.watch(authProvider);
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      next.whenOrNull(
+        autenticado: (_, __, ___) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '¡Bienvenido!',
+                style: TextStyle(color: colors.onPrimaryContainer),
+              ),
+              backgroundColor: colors.primaryContainer,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          Navigator.of(context).pushReplacementNamed('/home');
+        },
+        error: (message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: colors.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      );
+    });
+
+    final isLoading = authState.maybeWhen(
+      cargando: () => true,
+      orElse: () => false,
+    );
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => {
-            //Navigator.pop(context)
-          },
+          onPressed: () => {Navigator.pop(context)},
           icon: Icon(Icons.arrow_back),
         ),
         title: Text('ZooConnect'),
@@ -133,10 +167,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: FilledButton(
-                              onPressed: () {},
-                              child: Text("Iniciar Sesion"),
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      if (_formKey.currentState!.validate()) {
+                                        final email = _emailController.text;
+                                        final password =
+                                            _passwordController.text;
+                                        ref
+                                            .read(authProvider.notifier)
+                                            .login(email, password);
+                                      }
+                                    },
+                              child: isLoading
+                                  ? CustomLoader(size: 60)
+                                  : const Text("Iniciar Sesión"),
                             ),
                           ),
+                          SizedBox(height: 10),
                           TextButton(
                             onPressed: () {},
                             child: Text(

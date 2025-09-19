@@ -96,7 +96,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   Widget _buildBody(QuizQuestionsState state) {
     if (state.isLoading) {
-      return customLoader();
+      return CustomLoader();
     } else if (state.error != null) {
       return _buildErrorWidget(state.error!, ref);
     } else if (state.questions.isEmpty) {
